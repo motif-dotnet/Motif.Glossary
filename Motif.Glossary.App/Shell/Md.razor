@@ -1,0 +1,32 @@
+@namespace Motif.Glossary.App
+@* Inline Markdown from the glossary: code, bold, italic and links. Never raw HTML. *@
+@foreach (var span in Inline.Parse(Text ?? ""))
+{
+    switch (span.Kind)
+    {
+        case SpanKind.Code: <code>@span.Text</code> break;
+        case SpanKind.Strong: <b>@span.Text</b> break;
+        case SpanKind.Emphasis: <i>@span.Text</i> break;
+        case SpanKind.Link:
+            var href = span.Href ?? "";
+            if (href.StartsWith('#') && Links?.Review?.Glossary.FindBySlug(href[1..]) is { } term)
+            {
+                <a href="@href" @onclick="() => Links.ScrollTo(term)" @onclick:preventDefault="true">@span.Text</a>
+            }
+            else if (Links?.Url(href) is { } url)
+            {
+                <a href="@url" target="_blank" rel="noopener">@span.Text</a>
+            }
+            else
+            {
+                <span class="dead-link" title="@href">@span.Text</span>
+            }
+            break;
+        default: @span.Text break;
+    }
+}
+
+@code {
+    [Parameter] public string? Text { get; set; }
+    [CascadingParameter] public Links? Links { get; set; }
+}

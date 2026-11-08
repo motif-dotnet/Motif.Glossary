@@ -1,0 +1,118 @@
+@namespace Motif.Glossary.App
+@* One term in the review. Proposed terms are picked out; notes sit at the foot, gently. *@
+@{ var term = Item.Term; }
+<article class="term @(term.IsProposed ? "proposed" : "")" id="@Id(term)">
+    <header>
+        <h3>@term.Name</h3>
+        @if (term.IsProposed)
+        {
+            <span class="tag proposed">proposed</span>
+        }
+        else if (term.StatusText is { Length: > 0 } status && !status.StartsWith("agreed", StringComparison.OrdinalIgnoreCase))
+        {
+            <span class="tag" title="Status">@status</span>
+        }
+        @foreach (var other in term.Kinds.Where(k => k != GroupKind))
+        {
+            <span class="tag kind" title="This term has two kinds">also @other.Name()</span>
+        }
+    </header>
+
+    @foreach (var paragraph in term.Definition)
+    {
+        <p class="def"><Md Text="@paragraph" /></p>
+    }
+
+    @if (HasFields(term))
+    {
+        <dl class="fields">
+            @if (term.Avoid.Count > 0)
+            {
+                <dt>Avoid</dt>
+                <dd class="avoid">
+                    @foreach (var word in term.Avoid)
+                    {
+                        <span class="avoid-word" title="@word.Note"><span class="w">@word.Word</span>@if (word.Note is { } note) {<small> · @note</small>}</span>
+                    }
+                </dd>
+            }
+            @if (term.InCode is { Length: > 0 } inCode)
+            {
+                <dt>In code</dt>
+                <dd class="in-code"><Md Text="@inCode" /></dd>
+            }
+            @if (Item.Sketch.Count > 0)
+            {
+                <dt>Sketch</dt>
+                <dd class="sketch">
+                    @foreach (var s in Item.Sketch)
+                    {
+                        <span class="sketch-ref @(s.Item is null && HasSketchFile ? "missing" : "")">
+                            @if (s.Item is { } item)
+                            {
+                                <b>@item.Name</b> <span class="muted">@item.Type</span>
+                            }
+                            <code>@s.Id</code>
+                        </span>
+                    }
+                </dd>
+            }
+            @if (Item.SeeAlso.Count > 0)
+            {
+                <dt>See also</dt>
+                <dd class="see-also">
+                    @foreach (var (link, i) in Item.SeeAlso.Select((l, i) => (l, i)))
+                    {
+                        @if (i > 0) { <span class="muted">, </span> }
+                        @if (link.Term is { } target)
+                        {
+                            <a href="#@target.Slug" @onclick="() => Links!.ScrollTo(target)" @onclick:preventDefault="true">@link.Link.Text</a>
+                        }
+                        else
+                        {
+                            <span class="dead-link">@link.Link.Text</span>
+                        }
+                    }
+                </dd>
+            }
+            @foreach (var field in term.OtherFields)
+            {
+                <dt>@field.Key</dt>
+                <dd><Md Text="@field.Value" /></dd>
+            }
+        </dl>
+    }
+
+    @if (Item.NoteCount > 0)
+    {
+        <ul class="notes">
+            @foreach (var note in Item.FormatNotes)
+            {
+                <li>@Icons.Note<span>@note.Text</span></li>
+            }
+            @foreach (var note in Item.SketchNotes)
+            {
+                <li class="sketch-note">@Icons.Note<span>@note.Text</span></li>
+            }
+        </ul>
+    }
+</article>
+
+@code {
+    [Parameter, EditorRequired] public TermReview Item { get; set; } = null!;
+
+    /// <summary>The group the card is shown in, so a second kind can be named as "also …".</summary>
+    [Parameter] public Kind? GroupKind { get; set; }
+
+    [Parameter] public bool HasSketchFile { get; set; }
+
+    /// <summary>A term with two kinds is shown twice; only its first card carries the anchor.</summary>
+    [Parameter] public bool Anchor { get; set; } = true;
+
+    [CascadingParameter] public Links? Links { get; set; }
+
+    private string? Id(Term term) => Anchor ? "term-" + term.Slug : null;
+
+    private static bool HasFields(Term t) =>
+        t.Avoid.Count > 0 || t.InCode is { Length: > 0 } || t.SketchIds.Count > 0 || t.SeeAlso.Count > 0 || t.OtherFields.Count > 0;
+}

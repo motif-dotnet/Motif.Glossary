@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +17,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Motif.Glossary\Motif.Glossary.UseCases\Motif.Glossary.UseCases.csproj" />
+    <!-- The Web App is the composition root, so it alone knows the real adapters. -->
+    <ProjectReference Include="..\Adapters\Motif.Glossary.Repos\Motif.Glossary.Repos.csproj" />
+    <ProjectReference Include="..\Adapters\Motif.Glossary.Files\Motif.Glossary.Files.csproj" />
   </ItemGroup>
 
 </Project>

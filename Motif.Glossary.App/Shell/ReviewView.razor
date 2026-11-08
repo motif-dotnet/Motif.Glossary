@@ -1,0 +1,106 @@
+@namespace Motif.Glossary.App
+@* The Review: every term at a glance, grouped by kind. *@
+<div class="review">
+    <section class="review-head">
+        <div class="headline">
+            <h1>@(Review.Glossary.Title ?? "Glossary")</h1>
+            <div class="stats">
+                <span><b>@Review.Terms.Count</b> @Plural(Review.Terms.Count, "term")</span>
+                <span class="@(Review.ProposedCount > 0 ? "accent" : "")"><b>@Review.ProposedCount</b> proposed</span>
+                <span><b>@Review.NoteCount</b> @Plural(Review.NoteCount, "note")</span>
+                @if (Review.SketchFile is { } sketch)
+                {
+                    <span class="muted" title="Sketch ids are shown with the names they point to">Sketch file: @(sketch.Title ?? "untitled")</span>
+                }
+            </div>
+        </div>
+        <div class="controls">
+            <label class="toggle">
+                <input type="checkbox" checked="@ProposedOnly" disabled="@(Review.ProposedCount == 0)" @onchange="@(e => ProposedOnlyChanged.InvokeAsync(e.Value is true))" />
+                <span class="track"></span> Proposed only
+            </label>
+            @if (RepoLink is { } link)
+            {
+                <span class="repo-link">
+                    @Icons.Link<a href="@link" title="A link that always opens the latest glossary on the default branch">Repo link</a>
+                    <button class="ghost small" @onclick="CopyRepoLink">@Icons.Copy @(Copied ? "Copied" : "Copy")</button>
+                </span>
+            }
+        </div>
+    </section>
+
+    <nav class="kinds" aria-label="Kinds">
+        @foreach (var group in Groups)
+        {
+            <a href="#@GroupId(group)" @onclick="() => ScrollToGroup.InvokeAsync(GroupId(group))" @onclick:preventDefault="true">@group.Name <span class="count">@group.Terms.Count</span></a>
+        }
+        @if (Review.WithoutTerms.Count > 0 && !ProposedOnly)
+        {
+            <a href="#no-term" @onclick="@(() => ScrollToGroup.InvokeAsync("no-term"))" @onclick:preventDefault="true">With no term <span class="count">@Review.WithoutTerms.Count</span></a>
+        }
+    </nav>
+
+    @if (Review.Glossary.Intro.Count > 0 && !ProposedOnly)
+    {
+        <details class="intro">
+            <summary>About this glossary</summary>
+            @foreach (var p in Review.Glossary.Intro)
+            {
+                <p><Md Text="@p" /></p>
+            }
+        </details>
+    }
+
+    @if (Groups.Count == 0)
+    {
+        <p class="empty-note">No proposed terms: everything here is agreed.</p>
+    }
+
+    @foreach (var group in Groups)
+    {
+        <section class="group" id="@GroupId(group)">
+            <h2>@group.Name <span class="count">@group.Terms.Count</span></h2>
+            <div class="terms">
+                @foreach (var item in group.Terms)
+                {
+                    <TermCard @key="item" Item="item" GroupKind="group.Kind" HasSketchFile="Review.SketchFile is not null" Anchor="IsFirstShowing(item, group)" />
+                }
+            </div>
+        </section>
+    }
+
+    @if (Review.WithoutTerms.Count > 0 && !ProposedOnly)
+    {
+        <section class="group" id="no-term">
+            <h2>In the sketch, with no term <span class="count">@Review.WithoutTerms.Count</span></h2>
+            <p class="help">Elements and ports in the sketch file that no term has the sketch id of.</p>
+            <ul class="no-term">
+                @foreach (var note in Review.WithoutTerms)
+                {
+                    var item = Review.SketchFile!.Find(note.Subject)!;
+                    <li>@Icons.Note<b>@item.Name</b> <span class="muted">@item.Type</span> <code>@item.Id</code></li>
+                }
+            </ul>
+        </section>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Review Review { get; set; } = null!;
+    [Parameter, EditorRequired] public IReadOnlyList<KindGroup> Groups { get; set; } = [];
+    [Parameter] public Source? Source { get; set; }
+    [Parameter] public bool ProposedOnly { get; set; }
+    [Parameter] public EventCallback<bool> ProposedOnlyChanged { get; set; }
+    [Parameter] public string? RepoLink { get; set; }
+    [Parameter] public EventCallback CopyRepoLink { get; set; }
+    [Parameter] public bool Copied { get; set; }
+    [Parameter] public EventCallback<string> ScrollToGroup { get; set; }
+
+    private static string GroupId(KindGroup g) => "kind-" + (g.Kind?.Name().Replace(' ', '-') ?? "none");
+
+    private static string Plural(int n, string word) => n == 1 ? word : word + "s";
+
+    /// <summary>A term with two kinds shows in two groups; its anchor goes on the first.</summary>
+    private bool IsFirstShowing(TermReview item, KindGroup group) =>
+        Groups.First(g => g.Terms.Contains(item)) == group;
+}

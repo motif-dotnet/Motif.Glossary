@@ -1,0 +1,129 @@
+@namespace Motif.Glossary.App
+@implements IDisposable
+@inject MotifGlossaryApplication App
+@inject Browser Browser
+
+<PageTitle>@PageTitle</PageTitle>
+
+@if (started)
+{
+<div class="app @(dragDepth > 0 ? "dragging" : "")" @onclick="CloseMenus"
+     @ondragenter="DragEnter" @ondragleave="DragLeave" @ondragover:preventDefault="true" @ondrop="Drop" @ondrop:preventDefault="true">
+    <header class="appbar">
+        <button class="brand" title="Start again" @onclick="StartAgain">@Icons.Mark<span class="motif">Motif</span> <span class="tool">Glossary</span></button>
+
+        @if (App.Source is { } source)
+        {
+            <div class="vsep wide"></div>
+            <span class="pill" title="@SourceTitle(source)">@SourceIcon(source.Kind)<span class="text">@source.Name</span>@if (source.SketchFileName is not null) {<span class="long"> · with sketch file</span>}</span>
+        }
+
+        <div class="spacer"></div>
+
+        <button class="cmd" title="Open a glossary.md, with its sketch file if you like" @onclick="OpenFiles">@Icons.Open<span class="label">Open</span></button>
+        <button class="cmd" title="Paste a glossary's Markdown" @onclick="ShowPaste">@Icons.Paste<span class="label">Paste</span></button>
+        <button class="cmd" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="label">Repo</span></button>
+        <button class="cmd" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="label">Example</span></button>
+        <div class="vsep"></div>
+        <div class="menu @(menu == "theme" ? "open" : "")">
+            <button class="cmd icon" title="Theme" @onclick="@(() => Toggle("theme"))" @onclick:stopPropagation="true">@ThemeIcon</button>
+            <div class="menu-list narrow" role="menu">
+                <button role="menuitemradio" aria-checked="@(theme == "system" ? "true" : "false")" @onclick="@(() => SetTheme("system"))">@Icons.Monitor System</button>
+                <button role="menuitemradio" aria-checked="@(theme == "light" ? "true" : "false")" @onclick="@(() => SetTheme("light"))">@Icons.Sun Light</button>
+                <button role="menuitemradio" aria-checked="@(theme == "dark" ? "true" : "false")" @onclick="@(() => SetTheme("dark"))">@Icons.Moon Dark</button>
+            </div>
+        </div>
+    </header>
+
+    @if (App.Loading)
+    {
+        <div class="progress" role="status" aria-label="Reading the repo"></div>
+    }
+    @if (App.Problem is { } problem)
+    {
+        <div class="banner problem" role="alert"><span>@problem</span><button class="x small" title="Dismiss" @onclick="App.DismissProblem">@Icons.Close</button></div>
+    }
+    @if (App.SketchFileProblem is { } sketchProblem)
+    {
+        <div class="banner"><span>@sketchProblem</span></div>
+    }
+
+    <main class="scroll">
+        @if (App.Review is { } review)
+        {
+            <CascadingValue Value="links" IsFixed="false">
+                <ReviewView Review="review" Groups="App.Groups" Source="App.Source" ProposedOnly="App.ProposedOnly"
+                            ProposedOnlyChanged="ShowProposedOnly" RepoLink="@RepoLinkUrl" CopyRepoLink="CopyRepoLink" Copied="copied"
+                            ScrollToGroup="ScrollToGroup" />
+            </CascadingValue>
+        }
+        else if (!App.Loading)
+        {
+            <section class="start">
+                <h1>Review a project's glossary</h1>
+                <p class="lead">Every term at a glance, grouped by kind, with its Avoid words, status, In code and sketch ids. Proposed terms are picked out, and gentle notes point to anything that doesn't follow the <a href="https://github.com/motif-dotnet/.github/blob/main/design/glossary.md" target="_blank" rel="noopener">glossary format</a> or no longer matches the sketch.</p>
+                <div class="ways">
+                    <button class="way" @onclick="OpenFiles">
+                        @Icons.Open
+                        <b>Open or drop a file</b>
+                        <span>A <code>glossary.md</code>, and the <code>sketch.motifsketch.json</code> beside it if there is one. Drop them anywhere on the page.</span>
+                    </button>
+                    <button class="way" @onclick="ShowPaste">
+                        @Icons.Paste
+                        <b>Paste Markdown</b>
+                        <span>Paste a glossary straight from an editor or a pull request.</span>
+                    </button>
+                    <div class="way repo">
+                        @Icons.Repo
+                        <b>A public GitHub repo</b>
+                        <span>Reads <code>motif/glossary.md</code> from the default branch, and its sketch file if it has one.</span>
+                        <form class="repo-form" @onsubmit="SubmitRepo" @onsubmit:preventDefault="true">
+                            <input id="start-repo" placeholder="owner/name" aria-label="GitHub repo, as owner/name" @bind="repoText" @bind:event="oninput" spellcheck="false" autocapitalize="off" />
+                            <button class="primary" type="submit" disabled="@(string.IsNullOrWhiteSpace(repoText))">Review</button>
+                        </form>
+                    </div>
+                    <button class="way" @onclick="OpenExample">
+                        @Icons.Example
+                        <b>The Example</b>
+                        <span>Motif Sketch's own glossary, with its sketch file.</span>
+                    </button>
+                </div>
+                <p class="muted small">Everything happens in this browser: nothing is uploaded, and there's no sign-in. Part of <a href="https://github.com/motif-dotnet" target="_blank" rel="noopener">Motif.NET</a>.</p>
+            </section>
+        }
+    </main>
+
+    @if (dragDepth > 0)
+    {
+        <div class="drop-overlay" aria-hidden="true"><div>Drop a <code>glossary.md</code>, with its sketch file if you like</div></div>
+    }
+
+    @if (dialog == "paste")
+    {
+        <div class="scrim" @onclick="CloseDialog">
+            <div class="card dialog wide-dialog" role="dialog" aria-label="Paste a glossary" @onclick:stopPropagation="true">
+                <header><div class="t"><b>Paste a glossary</b><span>The Markdown of a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@Icons.Close</button></header>
+                <div class="body">
+                    <textarea id="paste-box" class="paste-box" @bind="pasteText" @bind:event="oninput" spellcheck="false" placeholder="# Glossary&#10;&#10;## Term&#10;&#10;What it means.&#10;&#10;- **Kind:** domain concept"></textarea>
+                    <div class="row end"><button class="ghost" @onclick="CloseDialog">Cancel</button><button class="primary" disabled="@string.IsNullOrWhiteSpace(pasteText)" @onclick="SubmitPaste">Review</button></div>
+                </div>
+            </div>
+        </div>
+    }
+    @if (dialog == "repo")
+    {
+        <div class="scrim" @onclick="CloseDialog">
+            <div class="card dialog" role="dialog" aria-label="Review a GitHub repo" @onclick:stopPropagation="true">
+                <header><div class="t"><b>Review a GitHub repo</b><span>A public repo with a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@Icons.Close</button></header>
+                <div class="body">
+                    <form @onsubmit="SubmitRepo" @onsubmit:preventDefault="true">
+                        <div class="field"><label for="repo-box">Repo</label><input id="repo-box" placeholder="owner/name" @bind="repoText" @bind:event="oninput" spellcheck="false" autocapitalize="off" /></div>
+                        <p class="help">Such as <button type="button" class="linkish" @onclick="@(() => repoText = "motif-dotnet/Motif.Sketch")">motif-dotnet/Motif.Sketch</button>. A github.com address works too.</p>
+                        <div class="row end"><button type="button" class="ghost" @onclick="CloseDialog">Cancel</button><button type="submit" class="primary" disabled="@string.IsNullOrWhiteSpace(repoText)">Review</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+}
