@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "title": "Motif Glossary",
+  "contextDiagram": {
+    "elements": [
+      {
+        "id": "9e1a0a01",
+        "type": "system",
+        "name": "Motif.Glossary",
+        "description": "Shows a project's glossary at a glance for review: terms grouped by kind, proposed terms picked out, gentle notes on the format and the sketch",
+        "technology": "Blazor WebAssembly (GitHub Pages)",
+        "x": 0,
+        "y": 0,
+        "pinned": false
+      },
+      {
+        "id": "9e1a0a02",
+        "type": "primaryActor",
+        "name": "Reviewer",
+        "description": "Opens, drops or pastes a glossary, or follows a repo link, and reviews its terms",
+        "technology": "Web browser",
+        "x": -345,
+        "y": 0,
+        "pinned": false
+      },
+      {
+        "id": "9e1a0a03",
+        "type": "externalSystem",
+        "name": "GitHub",
+        "description": "Public repos whose motif/ folder holds the glossary and, often, the sketch",
+        "technology": "raw.githubusercontent.com (HTTPS)",
+        "x": 365,
+        "y": -65,
+        "pinned": false
+      },
+      {
+        "id": "9e1a0a04",
+        "type": "storage",
+        "name": "Glossary Files",
+        "description": "A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one",
+        "technology": "Local files (opened or dropped)",
+        "x": 365,
+        "y": 65,
+        "pinned": false
+      }
+    ],
+    "relationships": [
+      {
+        "id": "9e1a0b01",
+        "from": "9e1a0a02",
+        "to": "9e1a0a01",
+        "label": "Opens and reviews glossaries",
+        "direction": "oneWay"
+      },
+      {
+        "id": "9e1a0b02",
+        "from": "9e1a0a01",
+        "to": "9e1a0a03",
+        "label": "Fetches a repo's glossary and sketch",
+        "direction": "oneWay"
+      },
+      {
+        "id": "9e1a0b03",
+        "from": "9e1a0a01",
+        "to": "9e1a0a04",
+        "label": "Reads glossary and sketch files",
+        "direction": "oneWay"
+      }
+    ]
+  },
+  "sketch": {
+    "ports": [
+      {
+        "id": "9e1a0c01",
+        "name": "User",
+        "side": "driving",
+        "isUser": true,
+        "adapters": [
+          {
+            "id": "9e1a0d01",
+            "name": "Web App",
+            "technology": "Blazor WebAssembly UI",
+            "description": "The review page. Pasted glossaries reach the application through it",
+            "kind": "real",
+            "sources": [
+              "9e1a0a02"
+            ]
+          },
+          {
+            "id": "9e1a0d02",
+            "name": "Specs",
+            "technology": "xUnit",
+            "description": "Checks that drive the application through the User port, using the fake driven adapters",
+            "kind": "checks",
+            "sources": []
+          }
+        ]
+      },
+      {
+        "id": "9e1a0c02",
+        "name": "Repos",
+        "description": "Reads a public repo's motif/glossary.md and, when it's there, its sketch, from the default branch",
+        "side": "driven",
+        "isUser": false,
+        "adapters": [
+          {
+            "id": "9e1a0d03",
+            "name": "GitHub",
+            "technology": "HttpClient (raw.githubusercontent.com)",
+            "description": "Public repos whose motif/ folder holds the glossary and, often, the sketch",
+            "kind": "real",
+            "sources": [
+              "9e1a0a03"
+            ]
+          },
+          {
+            "id": "9e1a0d04",
+            "name": "Fake Repos",
+            "kind": "fake",
+            "sources": []
+          }
+        ]
+      },
+      {
+        "id": "9e1a0c03",
+        "name": "Files",
+        "description": "Reads a glossary.md the Reviewer opens or drops in, and a sketch file with it if there is one",
+        "side": "driven",
+        "isUser": false,
+        "adapters": [
+          {
+            "id": "9e1a0d05",
+            "name": "Browser Files",
+            "technology": "File picker and drag and drop (JS interop)",
+            "description": "A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one",
+            "kind": "real",
+            "sources": [
+              "9e1a0a04"
+            ]
+          },
+          {
+            "id": "9e1a0d06",
+            "name": "Fake Files",
+            "kind": "fake",
+            "sources": []
+          }
+        ]
+      }
+    ]
+  }
+}
