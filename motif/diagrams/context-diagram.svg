@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="960" height="350" viewBox="-470 -175 960 350" font-family="'IBM Plex Sans', 'Segoe UI', Arial, sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <title>Motif Glossary</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 10" markerWidth="12" markerHeight="10" refX="12" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#52606D" />
+    </marker>
+  </defs>
+  <rect x="-470" y="-175" width="960" height="350" fill="#FFFFFF" />
+  <g class="relationship" data-id="9e1a0b01">
+    <line x1="-260" y1="0" x2="-120" y2="0" stroke="#52606D" stroke-width="1.5" stroke-linecap="round" class="outline" marker-end="url(#arrow)" />
+    <rect x="-222.86" y="-22.5" width="65.72" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="-190" y="-15" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">Opens and</text>
+    <rect x="-214.77" y="-7.5" width="49.54" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="-190" y="0" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">reviews</text>
+    <rect x="-221.13" y="7.5" width="62.25" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="-190" y="15" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">glossaries</text>
+  </g>
+  <g class="relationship" data-id="9e1a0b02">
+    <line x1="120" y1="-29.59" x2="280" y2="-69.04" stroke="#52606D" stroke-width="1.5" stroke-linecap="round" class="outline" marker-end="url(#arrow)" />
+    <rect x="151.86" y="-71.82" width="96.28" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="200" y="-64.32" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">Fetches a repo's</text>
+    <rect x="162.09" y="-56.82" width="75.82" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="200" y="-49.32" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">glossary and</text>
+    <rect x="178.09" y="-41.82" width="43.82" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="200" y="-34.32" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">sketch</text>
+  </g>
+  <g class="relationship" data-id="9e1a0b03">
+    <line x1="120" y1="29.59" x2="280" y2="69.04" stroke="#52606D" stroke-width="1.5" stroke-linecap="round" class="outline" marker-end="url(#arrow)" />
+    <rect x="155.44" y="34.32" width="89.12" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="200" y="41.82" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">Reads glossary</text>
+    <rect x="153.87" y="49.32" width="92.25" height="15" fill="#FFFFFF" stroke="none" stroke-width="0" />
+    <text x="200" y="56.82" font-size="12" fill="#0F172A" text-anchor="middle" dominant-baseline="central">and sketch files</text>
+  </g>
+  <g class="element" data-id="9e1a0a01" data-type="system">
+    <rect x="-120" y="-65" width="240" height="130" rx="6" ry="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="3" class="outline" />
+    <text x="0" y="-22.62" font-size="16" fill="#0F172A" text-anchor="middle" dominant-baseline="central" font-weight="600">Motif.Glossary</text>
+    <text x="0" y="-1.75" font-size="11" fill="#0F172A" text-anchor="middle" dominant-baseline="central">Shows a project's glossary at a glance for</text>
+    <text x="0" y="12" font-size="11" fill="#0F172A" text-anchor="middle" dominant-baseline="central">review: terms grouped by kind, proposed</text>
+    <text x="0" y="25.75" font-size="11" fill="#0F172A" text-anchor="middle" dominant-baseline="central">terms picked out, gentle notes on the form…</text>
+  </g>
+  <g class="element" data-id="9e1a0a02" data-type="primaryActor">
+    <rect x="-430" y="-45" width="170" height="90" rx="10" ry="10" fill="#64748B" stroke="#475569" stroke-width="2" class="outline" />
+    <circle cx="-345" cy="-23.12" r="5.5" fill="#FFFFFF" />
+    <path d="M-358,-2.62 A13,13 0 0 1 -332,-2.62 Z" fill="#FFFFFF" />
+    <text x="-345" y="6.12" font-size="14" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" font-weight="600">Reviewer</text>
+    <text x="-345" y="21.75" font-size="11" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" fill-opacity="0.8">Web browser</text>
+  </g>
+  <g class="element" data-id="9e1a0a03" data-type="externalSystem">
+    <rect x="280" y="-135" width="170" height="90" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2" class="outline" />
+    <text x="365" y="-103.75" font-size="14" fill="#1E293B" text-anchor="middle" dominant-baseline="central" font-weight="600">GitHub</text>
+    <text x="365" y="-88.12" font-size="11" fill="#1E293B" text-anchor="middle" dominant-baseline="central" fill-opacity="0.8">raw.githubusercontent.com</text>
+    <text x="365" y="-74.38" font-size="11" fill="#1E293B" text-anchor="middle" dominant-baseline="central" fill-opacity="0.8">(HTTPS)</text>
+  </g>
+  <g class="element" data-id="9e1a0a04" data-type="storage">
+    <g>
+      <path d="M280,57 A85,12 0 0 1 450,57 L450,123 A85,12 0 0 1 280,123 Z" fill="#CBD5E1" stroke="#475569" stroke-width="2" class="outline" />
+      <path d="M280,57 A85,12 0 0 0 450,57" fill="none" stroke="#475569" stroke-width="2" />
+    </g>
+    <text x="365" y="82.25" font-size="14" fill="#1E293B" text-anchor="middle" dominant-baseline="central" font-weight="600">Glossary Files</text>
+    <text x="365" y="97.88" font-size="11" fill="#1E293B" text-anchor="middle" dominant-baseline="central" fill-opacity="0.8">Local files (opened or</text>
+    <text x="365" y="111.62" font-size="11" fill="#1E293B" text-anchor="middle" dominant-baseline="central" fill-opacity="0.8">dropped)</text>
+  </g>
+</svg>

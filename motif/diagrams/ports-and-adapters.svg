@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="981.63" height="432.96" viewBox="-461.11 -236.48 981.63 432.96" font-family="'IBM Plex Sans', 'Segoe UI', Arial, sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <title>Motif.Glossary</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 10" markerWidth="12" markerHeight="10" refX="12" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#52606D" />
+    </marker>
+  </defs>
+  <rect x="-461.11" y="-236.48" width="981.63" height="432.96" fill="#FFFFFF" />
+  <g class="hexagon">
+    <polygon points="0,-170 -147.22,-85 -147.22,85 0,170 147.22,85 147.22,-85" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.5" stroke-linejoin="round" class="outline" />
+    <polygon points="-96.09,-114.52 -147.22,-85 -147.22,0 -72,0 -71.73,-6.28 -70.91,-12.5 -69.55,-18.63 -67.66,-24.63 -65.25,-30.43 -62.35,-36 -58.98,-41.3 -55.16,-46.28 -50.91,-50.91 -46.28,-55.16" fill="#FDECEA" stroke="#B03A2E" stroke-width="1" stroke-linejoin="round" />
+    <polygon points="-147.22,0 -147.22,85 -96.09,114.52 -46.28,55.16 -50.91,50.91 -55.16,46.28 -58.98,41.3 -62.35,36 -65.25,30.43 -67.66,24.63 -69.55,18.63 -70.91,12.5 -71.73,6.28 -72,0" fill="#FDECEA" stroke="#B03A2E" stroke-width="1" stroke-linejoin="round" />
+    <line x1="-72" y1="0" x2="-147.22" y2="0" stroke="#B03A2E" stroke-width="1" stroke-linecap="round" stroke-dasharray="4 3" />
+    <text x="-101.63" y="-41.06" font-size="13" fill="#B03A2E" text-anchor="middle" dominant-baseline="central">Tasks</text>
+    <text x="-101.63" y="41.06" font-size="13" fill="#B03A2E" text-anchor="middle" dominant-baseline="central">Queries</text>
+    <circle cx="0" cy="0" r="72" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+    <text x="0" y="0" font-size="16" fill="#0F172A" text-anchor="middle" dominant-baseline="central" font-weight="600">Domain</text>
+  </g>
+  <g>
+    <line x1="-247.96" y1="-10.19" x2="-290.22" y2="-30" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <line x1="-247.96" y1="10.19" x2="-290.22" y2="30" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <g class="port" data-id="9e1a0c01">
+      <line x1="-147.22" y1="0" x2="-202.22" y2="0" stroke="#0F172A" stroke-width="4" stroke-linecap="round" />
+      <circle cx="-226.22" cy="0" r="24" fill="#FFFFFF" stroke="#334155" stroke-width="4" class="outline" />
+      <text x="-226.22" y="-40" font-size="14" fill="#334155" text-anchor="middle" dominant-baseline="central" font-weight="600">User</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d01" data-kind="real">
+      <rect x="-441.11" y="-55" width="150.89" height="50" rx="4" ry="4" fill="#64748B" stroke="#475569" stroke-width="1.2" class="outline" />
+      <text x="-365.67" y="-38" font-size="13" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" font-weight="600">Web App</text>
+      <text x="-365.67" y="-21" font-size="11" fill="#E2E8F0" text-anchor="middle" dominant-baseline="central">Blazor WebAssembly UI</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d02" data-kind="checks">
+      <rect x="-392.7" y="5" width="102.48" height="50" rx="4" ry="4" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2" class="outline" />
+      <text x="-341.46" y="22" font-size="13" fill="#0F172A" text-anchor="middle" dominant-baseline="central" font-weight="600">Specs</text>
+      <text x="-341.46" y="39" font-size="11" fill="#475569" text-anchor="middle" dominant-baseline="central">Checks · xUnit</text>
+    </g>
+  </g>
+  <g>
+    <line x1="229.88" y1="-113.92" x2="270.51" y2="-151.48" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <line x1="234.95" y1="-97.18" x2="270.51" y2="-91.48" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <g class="port" data-id="9e1a0c02">
+      <line x1="147.22" y1="-68.65" x2="197.07" y2="-91.9" stroke="#0F172A" stroke-width="2" stroke-linecap="round" />
+      <circle cx="215.2" cy="-100.35" r="20" fill="#FFFFFF" stroke="#334155" stroke-width="2" class="outline" />
+      <text x="215.2" y="-136.35" font-size="14" fill="#334155" text-anchor="end" dominant-baseline="central" font-weight="600">Repos</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d03" data-kind="real">
+      <rect x="270.51" y="-176.48" width="229.13" height="50" rx="4" ry="4" fill="#64748B" stroke="#475569" stroke-width="1.2" class="outline" />
+      <text x="385.08" y="-159.48" font-size="13" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" font-weight="600">GitHub</text>
+      <text x="385.08" y="-142.48" font-size="11" fill="#E2E8F0" text-anchor="middle" dominant-baseline="central">HttpClient (raw.githubusercontent.com)</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d04" data-kind="fake">
+      <rect x="270.51" y="-116.48" width="101.89" height="50" rx="4" ry="4" fill="#FFFFFF" stroke="#64748B" stroke-width="1.2" stroke-dasharray="5 3" class="outline" />
+      <text x="321.46" y="-99.48" font-size="13" fill="#0F172A" text-anchor="middle" dominant-baseline="central" font-weight="600">Fake Repos</text>
+      <text x="321.46" y="-82.48" font-size="11" fill="#64748B" text-anchor="middle" dominant-baseline="central">Fake</text>
+    </g>
+  </g>
+  <g>
+    <line x1="234.95" y1="97.18" x2="270.51" y2="91.48" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <line x1="229.88" y1="113.92" x2="270.51" y2="151.48" stroke="#0F172A" stroke-width="1" stroke-linecap="round" />
+    <g class="port" data-id="9e1a0c03">
+      <line x1="147.22" y1="68.65" x2="197.07" y2="91.9" stroke="#0F172A" stroke-width="2" stroke-linecap="round" />
+      <circle cx="215.2" cy="100.35" r="20" fill="#FFFFFF" stroke="#334155" stroke-width="2" class="outline" />
+      <text x="215.2" y="136.35" font-size="14" fill="#334155" text-anchor="end" dominant-baseline="central" font-weight="600">Files</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d05" data-kind="real">
+      <rect x="270.51" y="66.48" width="230" height="50" rx="4" ry="4" fill="#64748B" stroke="#475569" stroke-width="1.2" class="outline" />
+      <text x="385.51" y="83.48" font-size="13" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central" font-weight="600">Browser Files</text>
+      <text x="385.51" y="100.48" font-size="11" fill="#E2E8F0" text-anchor="middle" dominant-baseline="central">File picker and drag and drop (JS interop)</text>
+    </g>
+    <g class="adapter" data-id="9e1a0d06" data-kind="fake">
+      <rect x="270.51" y="126.48" width="100" height="50" rx="4" ry="4" fill="#FFFFFF" stroke="#64748B" stroke-width="1.2" stroke-dasharray="5 3" class="outline" />
+      <text x="320.51" y="143.48" font-size="13" fill="#0F172A" text-anchor="middle" dominant-baseline="central" font-weight="600">Fake Files</text>
+      <text x="320.51" y="160.48" font-size="11" fill="#64748B" text-anchor="middle" dominant-baseline="central">Fake</text>
+    </g>
+  </g>
+  <text x="-441.11" y="-206.48" font-size="18" fill="#0F172A" text-anchor="start" dominant-baseline="central" font-weight="600">Motif.Glossary</text>
+</svg>

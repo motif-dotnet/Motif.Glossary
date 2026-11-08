@@ -30,7 +30,7 @@
         "description": "Public repos whose motif/ folder holds the glossary and, often, the sketch",
         "technology": "raw.githubusercontent.com (HTTPS)",
         "x": 365,
-        "y": -65,
+        "y": -90,
         "pinned": false
       },
       {
@@ -40,7 +40,7 @@
         "description": "A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one",
         "technology": "Local files (opened or dropped)",
         "x": 365,
-        "y": 65,
+        "y": 90,
         "pinned": false
       }
     ],
