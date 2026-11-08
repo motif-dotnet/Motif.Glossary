@@ -93,8 +93,74 @@ public class SketchNoteSpecs
 
         f.Queries.Review!.Terms.Should().HaveCount(3);
         f.Queries.Review.SketchFile.Should().BeNull();
-        f.Queries.SketchFileProblem.Should().StartWith("The sketch file couldn't be read");
+        f.Queries.SketchFileProblem.Should().StartWith("The sketch file couldn't be read").And.Contain("It isn't valid JSON (");
         f.Queries.Source!.SketchFileName.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("[]", "It isn't a Motif Sketch file.")]
+    [InlineData("""{ "name": "Not a sketch" }""", "It isn't a Motif Sketch file: there are no elements or ports in it.")]
+    public void Json_that_isnt_a_sketch_file_is_not_read(string json, string problem)
+    {
+        SketchFileReader.TryRead(json, out var file, out var why).Should().BeFalse();
+
+        file.Should().BeNull();
+        why.Should().Be(problem);
+    }
+
+    [Fact]
+    public void Sketch_items_are_read_with_their_types_even_from_a_hand_edited_file()
+    {
+        const string json = """
+            {
+              // Motif Sketch doesn't write comments or trailing commas, but people editing by hand might.
+              "title": "Tiny",
+              "contextDiagram": { "elements": [
+                { "id": "e1", "type": "system", "name": "Tiny" },
+                { "id": "e2", "type": "secondaryActor", "name": "Auditor" },
+                { "id": "e3", "type": "externalSystem" },
+                { "id": "e4", "type": "storage", "name": "Shelf" },
+                { "id": "e5", "name": "Untyped" },
+                { "id": "e6", "type": "note", "name": "Aside" },
+                { "type": "storage", "name": "No id" },
+              ] },
+              "sketch": { "ports": [
+                { "id": "p1", "name": "Audit", "adapters": [ { "id": "a1", "name": "Fake" }, { "id": "a2", "name": "Disk", "kind": "real" } ] },
+              ] },
+            }
+            """;
+
+        SketchFileReader.TryRead(json, out var file, out var problem).Should().BeTrue();
+
+        problem.Should().BeNull();
+        file!.Title.Should().Be("Tiny");
+        file.Items.Should().Equal(
+            new SketchItem("e1", "Tiny", "system", Kind.System),
+            new SketchItem("e2", "Auditor", "secondary actor", Kind.Actor),
+            new SketchItem("e3", "e3", "external system", Kind.ExternalSystem),
+            new SketchItem("e4", "Shelf", "storage", Kind.Storage),
+            new SketchItem("e5", "Untyped", "element", Kind.DomainConcept),
+            new SketchItem("e6", "Aside", "note", Kind.DomainConcept),
+            new SketchItem("p1", "Audit", "port", Kind.Port),
+            new SketchItem("a1", "Fake", "adapter", Kind.Adapter),
+            new SketchItem("a2", "Disk", "real adapter", Kind.Adapter));
+    }
+
+    [Fact]
+    public void A_sketch_file_with_nothing_in_it_yet_is_still_read()
+    {
+        SketchFileReader.TryRead("""{ "schemaVersion": 1 }""", out var file, out var problem).Should().BeTrue();
+
+        problem.Should().BeNull();
+        file!.Items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Sketch_ids_can_be_written_without_code_spans()
+    {
+        var review = Fixture.Pasted("## Alpha\n\n- **Kind:** actor\n- **Sketch:** e1 (element), p1\n");
+
+        Fixture.Term(review, "Alpha").Term.SketchIds.Should().Equal("e1", "p1");
     }
 
     [Fact]

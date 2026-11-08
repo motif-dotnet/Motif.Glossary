@@ -27,6 +27,7 @@ public sealed class MotifGlossaryApplication(Repos repos, Files files) : UserTas
         attempt++;
         if (string.IsNullOrWhiteSpace(markdown))
         {
+            Loading = false;
             Problem = "There's nothing to review: paste a glossary's Markdown first.";
             return;
         }
@@ -65,7 +66,9 @@ public sealed class MotifGlossaryApplication(Repos repos, Files files) : UserTas
     {
         if (!RepoName.TryParse(repo, out var name))
         {
+            // A repo still being read is dropped, so it's no longer loading.
             attempt++;
+            Loading = false;
             Problem = $"“{repo.Trim()}” isn't a GitHub repo. Give it as owner/name, such as motif-dotnet/Motif.Sketch.";
             return;
         }

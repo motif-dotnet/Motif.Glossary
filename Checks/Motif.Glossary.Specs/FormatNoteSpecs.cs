@@ -76,6 +76,23 @@ public class FormatNoteSpecs
     }
 
     [Fact]
+    public void Each_note_says_what_is_wrong_in_a_sentence()
+    {
+        static FormatNote Only(string markdown) => Fixture.Term(Fixture.Pasted(markdown), "Alpha").FormatNotes.Single();
+
+        Only("## Alpha\n").Should().Be(
+            new FormatNote(FormatNoteKind.NoKind, "", "No Kind yet. Every term has one of the seven kinds."));
+        Only("## Alpha\n\n- **Kind:** widget\n").Should().Be(
+            new FormatNote(FormatNoteKind.UnknownKind, "widget", "“widget” isn't one of the seven kinds: system, actor, external system, storage, port, adapter or domain concept."));
+        Only("## Alpha\n\n- **Kind:** storage, port, adapter\n").Should().Be(
+            new FormatNote(FormatNoteKind.TooManyKinds, "", "3 kinds. A term has two at most."));
+        Only("## Alpha\n\n- **Kind:** actor\n- **See also:** [Gamma](#gamma)\n").Should().Be(
+            new FormatNote(FormatNoteKind.UnresolvedSeeAlso, "Gamma", "See also “Gamma” doesn't match a term here."));
+        Only("## Alpha\n\n- **Kind:** actor\n- **Avoid:** beta\n\n## Beta\n\n- **Kind:** actor\n").Should().Be(
+            new FormatNote(FormatNoteKind.AvoidWordIsTerm, "beta", "“beta” is listed under Avoid, but it's also a term here."));
+    }
+
+    [Fact]
     public void Notes_never_stop_a_glossary_being_reviewed()
     {
         var f = new Fixture();

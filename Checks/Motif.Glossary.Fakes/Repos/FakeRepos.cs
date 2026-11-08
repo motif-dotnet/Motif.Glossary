@@ -16,10 +16,27 @@ public sealed class FakeRepos : Repos
         return this;
     }
 
-    public Task<RepoFiles> Read(RepoName repo, CancellationToken cancellationToken = default)
+    private TaskCompletionSource? held;
+
+    /// <summary>Holds every read until <see cref="Release"/>, so a spec can act while a repo is still being read.</summary>
+    public FakeRepos Hold()
+    {
+        held = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        return this;
+    }
+
+    public void Release()
+    {
+        var gate = held;
+        held = null;
+        gate?.SetResult();
+    }
+
+    public async Task<RepoFiles> Read(RepoName repo, CancellationToken cancellationToken = default)
     {
         Reads.Add(repo);
+        if (held is { } gate) await gate.Task;
         if (Unreachable) throw new HttpRequestException("no network");
-        return Task.FromResult(repos.TryGetValue(repo.ToString(), out var files) ? files : new RepoFiles(null, null));
+        return repos.TryGetValue(repo.ToString(), out var files) ? files : new RepoFiles(null, null);
     }
 }
