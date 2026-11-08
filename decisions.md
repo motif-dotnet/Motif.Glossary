@@ -27,6 +27,4 @@ Motif Glossary shows a project's `motif/glossary.md` in a form that's easy to lo
 - **Editing:** agree terms, add Avoid words, save back to the file.
 - **Private repos**, through GitHub sign-in.
 
-## Still open
-
-- [design/ideas.md](https://github.com/motif-dotnet/.github/blob/main/design/ideas.md) links #10 from the **Glossary in context** row (IDE hover text, Sketch highlighting), but this viewer is closer to the **Glossary editor** row. One of them needs rewording.
+These are tracked in [#2](https://github.com/motif-dotnet/Motif.Glossary/issues/2).
