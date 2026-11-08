@@ -33,4 +33,7 @@ You need the .NET 10 SDK.
 ```
 dotnet run --project Motif.Glossary.App   # the app
 dotnet test                                # the specs
+dotnet tool restore && dotnet stryker      # mutation testing of the specs
 ```
+
+Mutation testing uses [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/introduction/), a local tool in [dotnet-tools.json](dotnet-tools.json), set up by [stryker-config.json](stryker-config.json). It changes the code under the specs (Domain and UseCases) a little at a time and checks a spec fails each time. The HTML report is written to `StrykerOutput/`.
