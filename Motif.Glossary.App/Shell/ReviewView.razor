@@ -22,8 +22,8 @@
             @if (RepoLink is { } link)
             {
                 <span class="repo-link">
-                    @Icons.Link<a href="@link" title="A link that always opens the latest glossary on the default branch">Repo link</a>
-                    <button class="ghost small" @onclick="CopyRepoLink">@Icons.Copy @(Copied ? "Copied" : "Copy")</button>
+                    @SuiteIcons.Link<a href="@link" title="A link that always opens the latest glossary on the default branch">Repo link</a>
+                    <button class="ghost small" @onclick="CopyRepoLink">@SuiteIcons.Copy @(Copied ? "Copied" : "Copy")</button>
                 </span>
             }
         </div>

@@ -20,7 +20,7 @@ These pictures are exported by [Motif Sketch](https://motif-dotnet.github.io/Mot
 
 ## Status
 
-**v1, read-only viewer.** All four ways in work: open or drop a `glossary.md` (with its sketch file if you like), paste Markdown, a public GitHub repo (`owner/name`, with a shareable `#repo=owner/name` link), and the Example, Motif Sketch's own glossary. The review groups terms by the seven kinds, shows each term's Avoid words, status, In code and sketch ids (resolved to names when there's a sketch file), picks out *proposed* terms with a "Proposed only" filter, and shows gentle format and sketch notes. Light and dark themes, like Motif Sketch.
+**v1, read-only viewer.** All four ways in work: open or drop a `glossary.md` (with its sketch file if you like), paste Markdown, a public GitHub repo (`owner/name`, with a shareable `#repo=owner/name` link), and the Example, Motif Sketch's own glossary. The review groups terms by the seven kinds, shows each term's Avoid words, status, In code and sketch ids (resolved to names when there's a sketch file), picks out *proposed* terms with a "Proposed only" filter, and shows gentle format and sketch notes. Light and dark themes, and the same look as Motif Sketch from the suite's web kit.
 
 It deploys to GitHub Pages at <https://motif-dotnet.github.io/Motif.Glossary/> through [.github/workflows/pages.yml](.github/workflows/pages.yml), which runs the specs first.
 

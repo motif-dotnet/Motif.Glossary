@@ -8,11 +8,23 @@
     <meta name="color-scheme" content="light dark" />
     <title>Motif Glossary</title>
     <meta name="description" content="Review a project's glossary at a glance: terms grouped by kind, proposed terms picked out, and gentle notes on the format and the sketch." />
+    <!-- Link previews (LinkedIn, Slack and others). The image comes from the Motif.NET brand folder and needs an absolute URL. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Motif.NET" />
+    <meta property="og:title" content="Motif Glossary" />
+    <meta property="og:description" content="See a project's glossary at a glance: terms grouped by kind, proposed terms picked out for review, and gentle notes where it drifts from the format or the sketch. Runs in the browser, with no server and no accounts." />
+    <meta property="og:url" content="https://motif-dotnet.github.io/Motif.Glossary/" />
+    <meta property="og:image" content="https://motif-dotnet.github.io/Motif.Glossary/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="Motif Glossary: see a project's glossary at a glance, with proposed terms picked out for review." />
+    <meta name="twitter:card" content="summary_large_image" />
     <base href="/" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preload" href="fonts/IBMPlexSans-Regular-Latin1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fonts/IBMPlexSans-SemiBold-Latin1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" id="webassembly" />
+    <link rel="stylesheet" href="css/motif.css" />
     <link rel="stylesheet" href="css/app.css" />
     <script>
         // Apply a remembered theme before the first paint, so dark-mode users don't see a flash.
@@ -35,7 +47,7 @@
     </div>
 
     <div id="blazor-error-ui">
-        Something went wrong.
+        Something went wrong. Nothing was uploaded, so it's safe to reload.
         <a href="." class="reload">Reload</a>
         <span class="dismiss">✕</span>
     </div>

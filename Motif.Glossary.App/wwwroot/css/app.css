@@ -1,112 +1,15 @@
-/* Motif Glossary: Motif Sketch's look (its palette, with the dark twin, and IBM Plex). Slate chrome, orange only for "look here". */
+/* Motif Glossary's own look, on top of the suite's css/motif.css (the palette, fonts, app bar, menus, dialogs and toasts). */
 
-@font-face { font-family: "IBM Plex Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/IBMPlexSans-Regular-Latin1.woff2") format("woff2"); }
-@font-face { font-family: "IBM Plex Sans"; font-weight: 500; font-style: normal; font-display: swap; src: url("../fonts/IBMPlexSans-Medium-Latin1.woff2") format("woff2"); }
-@font-face { font-family: "IBM Plex Sans"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/IBMPlexSans-SemiBold-Latin1.woff2") format("woff2"); }
-@font-face { font-family: "IBM Plex Mono"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/IBMPlexMono-Regular-Latin1.woff2") format("woff2"); }
-
-:root {
-  color-scheme: light;
-  --chrome: #F1F5F9;  --bar: #FFFFFF;    --strip: #F8FAFC;  --canvas: #FFFFFF;
-  --ink: #0F172A;     --text: #334155;   --muted: #64748B;  --line: #E2E8F0;  --line-strong: #CBD5E1;
-  --hover: #EEF2F6;   --pressed: #E2E8F0;
-  --accent: #EA580C;  --accent-ink: #FFFFFF; --accent-soft: #FFF1E6;
-  --card: #FFFFFF;    --shadow: 0 8px 24px rgba(15,23,42,.10), 0 1px 2px rgba(15,23,42,.06);
-  --banner: #FEF3C7;  --banner-ink: #78350F;
-  --problem: #B91C1C; --problem-soft: #FEF2F2;
-  --code: #9A3412;
-}
-/* A chosen Light theme is light only: without "only", Chrome on Android's "dark theme for sites" darkens it anyway. */
-:root[data-theme="light"] { color-scheme: only light; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --chrome: #0B1120;  --bar: #111827;    --strip: #0F172A;  --canvas: #141C2B;
-    --ink: #F1F5F9;     --text: #CBD5E1;   --muted: #94A3B8;  --line: #1F2A3C;  --line-strong: #334155;
-    --hover: #1C2638;   --pressed: #263248;
-    --accent: #FB923C;  --accent-ink: #1A0E05; --accent-soft: #2A1A10;
-    --card: #182235;    --shadow: 0 8px 24px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4);
-    --banner: #2A2110;  --banner-ink: #FCD34D;
-    --problem: #FCA5A5; --problem-soft: #2A1215;
-    --code: #FDBA74;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --chrome: #0B1120;  --bar: #111827;    --strip: #0F172A;  --canvas: #141C2B;
-  --ink: #F1F5F9;     --text: #CBD5E1;   --muted: #94A3B8;  --line: #1F2A3C;  --line-strong: #334155;
-  --hover: #1C2638;   --pressed: #263248;
-  --accent: #FB923C;  --accent-ink: #1A0E05; --accent-soft: #2A1A10;
-  --card: #182235;    --shadow: 0 8px 24px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.4);
-  --banner: #2A2110;  --banner-ink: #FCD34D;
-  --problem: #FCA5A5; --problem-soft: #2A1215;
-  --code: #FDBA74;
-}
-
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; overflow: hidden; }
-body { font: 13px/1.5 "IBM Plex Sans", "Segoe UI", Arial, sans-serif; color: var(--text); background: var(--chrome); }
-#app { height: 100%; }
-a { color: var(--ink); text-decoration-color: var(--line-strong); text-underline-offset: 2px; }
-a:hover { text-decoration-color: var(--accent); }
-button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; white-space: nowrap; }
-button:disabled { opacity: .4; cursor: default; }
-button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: .92em; color: var(--code); }
-.muted { color: var(--muted); }
 .small { font-size: 12px; }
-
-/* Splash, shown until Blazor starts */
-.splash { height: 100%; display: grid; place-content: center; justify-items: center; gap: 10px; color: var(--ink); }
-.splash .mark { width: 48px; height: 48px; }
-.splash .word { font-size: 22px; letter-spacing: -.01em; }
-.splash .word .motif { color: var(--muted); }
-.splash .word b { font-weight: 600; }
-.splash .loading { color: var(--muted); }
-
-.app { height: 100%; display: flex; flex-direction: column; position: relative; }
-
-/* App bar */
-.appbar { height: 48px; flex: none; display: flex; align-items: center; gap: 2px; padding: 0 10px; background: var(--bar); border-bottom: 1px solid var(--line); }
-.brand { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; color: var(--ink); font-size: 15px; letter-spacing: -.01em; border-radius: 6px; }
-.brand:hover { background: var(--hover); }
-.brand .mark { width: 24px; height: 24px; }
-.brand .motif { font-weight: 400; color: var(--muted); }
-.brand .tool { font-weight: 600; margin-left: -4px; }
-.cmd { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 6px; color: var(--text); }
-.cmd:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
-.cmd:active:not(:disabled) { background: var(--pressed); }
-.cmd.icon { padding: 0 8px; }
-.vsep { width: 1px; height: 20px; background: var(--line); margin: 0 6px; flex: none; }
-.spacer { flex: 1; }
-.pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px; background: var(--hover); color: var(--text); font-size: 12px; white-space: nowrap; min-width: 0; max-width: 420px; }
-.pill .text { overflow: hidden; text-overflow: ellipsis; color: var(--ink); font-weight: 500; }
-.primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.primary:hover:not(:disabled) { filter: brightness(1.06); }
-.ghost { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line-strong); color: var(--ink); font-weight: 500; }
-.ghost.small { height: 24px; padding: 0 8px; font-size: 12px; gap: 4px; }
-.ghost.small svg.i { width: 13px; height: 13px; }
-.ghost:hover { background: var(--hover); }
 .linkish { padding: 0; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 2px; }
 
-.menu { position: relative; }
-.menu-list { display: none; position: absolute; top: calc(100% + 4px); right: 0; z-index: 30; min-width: 170px; background: var(--card); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: var(--shadow); padding: 4px; }
-.menu.open .menu-list { display: block; }
-.menu-list button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 5px; text-align: left; color: var(--text); }
-.menu-list button:hover { background: var(--hover); color: var(--ink); }
-.menu-list button[aria-checked="true"]::after { content: "✓"; margin-left: auto; color: var(--accent); }
-
-.banner { flex: none; background: var(--banner); color: var(--banner-ink); padding: 7px 14px; font-size: 12.5px; display: flex; gap: 10px; align-items: center; }
-.banner span { flex: 1; }
-.banner.problem { background: var(--problem-soft); color: var(--problem); }
-.x { width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); flex: none; }
-.x:hover { background: var(--hover); color: var(--ink); }
-.x.small { width: 20px; height: 20px; font-size: 11px; color: inherit; }
+/* App bar: the source pill and the progress bar under it */
+.pill .text { overflow: hidden; text-overflow: ellipsis; color: var(--ink); font-weight: 500; }
 .progress { flex: none; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent) 0 0 / 40% 100% no-repeat; animation: slide 1.1s linear infinite; }
 @keyframes slide { from { background-position: -40% 0; } to { background-position: 140% 0; } }
 
-.scroll { flex: 1; min-height: 0; overflow: auto; scroll-padding-top: 16px; }
+/* The page scrolls under the bar, and reads a little looser than the suite's chrome */
+.scroll { flex: 1; min-height: 0; overflow: auto; scroll-padding-top: 16px; line-height: 1.5; }
 
 /* Start: the four ways in */
 .start { max-width: 880px; margin: 0 auto; padding: 48px 20px 40px; }
@@ -118,8 +21,8 @@ button.way:hover { border-color: var(--accent); }
 .way svg.i { width: 22px; height: 22px; color: var(--accent); margin-bottom: 2px; }
 .way b { color: var(--ink); font-size: 15px; font-weight: 600; }
 .repo-form { display: flex; gap: 8px; width: 100%; margin-top: 6px; }
-.repo-form input, .field input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--canvas); border: 1px solid var(--line-strong); border-radius: 6px; padding: 5px 9px; height: 32px; }
-.repo-form input:focus, .field input:focus, .paste-box:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.repo-form input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--canvas); border: 1px solid var(--line-strong); border-radius: 6px; padding: 5px 9px; height: 32px; }
+.repo-form input:focus, .paste-box:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
 
 /* The Review */
 .review { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
@@ -185,7 +88,6 @@ button.way:hover { border-color: var(--accent); }
 .no-term li { align-items: center; color: var(--banner-ink); }
 .no-term li b { color: var(--banner-ink); font-weight: 600; }
 .no-term li .muted, .no-term li code { color: var(--banner-ink); opacity: .85; }
-.help { font-size: 12px; color: var(--muted); margin: -4px 0 8px; }
 .empty-note { color: var(--muted); padding: 24px 0; }
 
 /* Drag and drop */
@@ -193,32 +95,10 @@ button.way:hover { border-color: var(--accent); }
 .drop-overlay div { padding: 22px 28px; border-radius: 12px; border: 2px dashed var(--accent); background: var(--card); color: var(--ink); font-size: 15px; font-weight: 500; box-shadow: var(--shadow); }
 
 /* Dialogs */
-.scrim { position: fixed; inset: 0; z-index: 40; background: rgba(15,23,42,.28); display: grid; place-items: center; padding: 16px; }
-.card { background: var(--card); border: 1px solid var(--line-strong); border-radius: 10px; box-shadow: var(--shadow); }
-.card header { display: flex; align-items: center; gap: 4px; padding: 12px 8px 10px 16px; }
-.card header .t { flex: 1; min-width: 0; }
-.card header b { display: block; color: var(--ink); font-weight: 600; font-size: 14px; }
-.card header span { color: var(--muted); font-size: 12px; }
-.card .body { padding: 2px 16px 16px; }
-.dialog { width: min(440px, 100%); max-height: calc(100% - 32px); overflow: auto; }
 .dialog.wide-dialog { width: min(720px, 100%); }
-.field { margin-bottom: 10px; display: flex; flex-direction: column; }
-.field label { font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 3px; }
 .paste-box { display: block; width: 100%; height: min(52vh, 420px); resize: vertical; font: 12px/1.5 "IBM Plex Mono", Consolas, monospace; color: var(--ink); background: var(--canvas); border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; }
-.row { display: flex; gap: 8px; }
-.row.end { justify-content: flex-end; }
 
-#blazor-error-ui { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; padding: 10px 16px; background: var(--banner); color: var(--banner-ink); }
-#blazor-error-ui .dismiss { cursor: pointer; position: absolute; right: 12px; top: 8px; }
-
-@media (max-width: 899px) {
-  .wide, .pill .long { display: none !important; }
-  .cmd .label { display: none; }
-  .cmd { padding: 0 8px; }
-}
 @media (max-width: 599px) {
-  .brand .motif { display: none; }
-  .appbar { padding: 0 6px; gap: 0; }
   .pill { max-width: 120px; }
   .ways { grid-template-columns: 1fr; }
   .start { padding-top: 28px; }

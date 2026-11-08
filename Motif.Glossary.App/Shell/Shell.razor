@@ -10,7 +10,7 @@
 <div class="app @(dragDepth > 0 ? "dragging" : "")" @onclick="CloseMenus"
      @ondragenter="DragEnter" @ondragleave="DragLeave" @ondragover:preventDefault="true" @ondrop="Drop" @ondrop:preventDefault="true">
     <header class="appbar">
-        <button class="brand" title="Start again" @onclick="StartAgain">@Icons.Mark<span class="motif">Motif</span> <span class="tool">Glossary</span></button>
+        <ToolSwitcher Current="glossary" Open="@(menu == "tools")" OnToggle="@(() => Toggle("tools"))" />
 
         @if (App.Source is { } source)
         {
@@ -20,28 +20,23 @@
 
         <div class="spacer"></div>
 
-        <button class="cmd" title="Open a glossary.md, with its sketch file if you like" @onclick="OpenFiles">@Icons.Open<span class="label">Open</span></button>
-        <button class="cmd" title="Paste a glossary's Markdown" @onclick="ShowPaste">@Icons.Paste<span class="label">Paste</span></button>
-        <button class="cmd" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="label">Repo</span></button>
-        <button class="cmd" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="label">Example</span></button>
+        @if (App.Review is not null)
+        {
+            <button class="cmd" title="Back to the four ways in" @onclick="StartAgain">@Icons.Back<span class="wide">Start again</span></button>
+            <div class="vsep"></div>
+        }
+        <button class="cmd" title="Open a glossary.md, with its sketch file if you like" @onclick="OpenFiles">@Icons.Open<span class="wide">Open</span></button>
+        <button class="cmd" title="Paste a glossary's Markdown" @onclick="ShowPaste">@Icons.Paste<span class="wide">Paste</span></button>
+        <button class="cmd" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="wide">Repo</span></button>
+        <button class="cmd" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="wide">Example</span></button>
         <div class="vsep"></div>
-        <div class="menu @(menu == "theme" ? "open" : "")">
-            <button class="cmd icon" title="Theme" @onclick="@(() => Toggle("theme"))" @onclick:stopPropagation="true">@ThemeIcon</button>
-            <div class="menu-list narrow" role="menu">
-                <button role="menuitemradio" aria-checked="@(theme == "system" ? "true" : "false")" @onclick="@(() => SetTheme("system"))">@Icons.Monitor System</button>
-                <button role="menuitemradio" aria-checked="@(theme == "light" ? "true" : "false")" @onclick="@(() => SetTheme("light"))">@Icons.Sun Light</button>
-                <button role="menuitemradio" aria-checked="@(theme == "dark" ? "true" : "false")" @onclick="@(() => SetTheme("dark"))">@Icons.Moon Dark</button>
-            </div>
-        </div>
+        <ThemeMenu Theme="@theme" ThemeChanged="SetTheme" Open="@(menu == "theme")" OnToggle="@(() => Toggle("theme"))" />
+        <button class="cmd icon" title="Help" @onclick="ToggleHelp" @onclick:stopPropagation="true">@SuiteIcons.Help</button>
     </header>
 
     @if (App.Loading)
     {
         <div class="progress" role="status" aria-label="Reading the repo"></div>
-    }
-    @if (App.Problem is { } problem)
-    {
-        <div class="banner problem" role="alert"><span>@problem</span><button class="x small" title="Dismiss" @onclick="App.DismissProblem">@Icons.Close</button></div>
     }
     @if (App.SketchFileProblem is { } sketchProblem)
     {
@@ -102,7 +97,7 @@
     {
         <div class="scrim" @onclick="CloseDialog">
             <div class="card dialog wide-dialog" role="dialog" aria-label="Paste a glossary" @onclick:stopPropagation="true">
-                <header><div class="t"><b>Paste a glossary</b><span>The Markdown of a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@Icons.Close</button></header>
+                <header><div class="t"><b>Paste a glossary</b><span>The Markdown of a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@SuiteIcons.Close</button></header>
                 <div class="body">
                     <textarea id="paste-box" class="paste-box" @bind="pasteText" @bind:event="oninput" spellcheck="false" placeholder="# Glossary&#10;&#10;## Term&#10;&#10;What it means.&#10;&#10;- **Kind:** domain concept"></textarea>
                     <div class="row end"><button class="ghost" @onclick="CloseDialog">Cancel</button><button class="primary" disabled="@string.IsNullOrWhiteSpace(pasteText)" @onclick="SubmitPaste">Review</button></div>
@@ -114,7 +109,7 @@
     {
         <div class="scrim" @onclick="CloseDialog">
             <div class="card dialog" role="dialog" aria-label="Review a GitHub repo" @onclick:stopPropagation="true">
-                <header><div class="t"><b>Review a GitHub repo</b><span>A public repo with a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@Icons.Close</button></header>
+                <header><div class="t"><b>Review a GitHub repo</b><span>A public repo with a <code>motif/glossary.md</code></span></div><button class="x" title="Close" @onclick="CloseDialog">@SuiteIcons.Close</button></header>
                 <div class="body">
                     <form @onsubmit="SubmitRepo" @onsubmit:preventDefault="true">
                         <div class="field"><label for="repo-box">Repo</label><input id="repo-box" placeholder="owner/name" @bind="repoText" @bind:event="oninput" spellcheck="false" autocapitalize="off" /></div>
@@ -125,5 +120,28 @@
             </div>
         </div>
     }
+
+    @if (helpOpen)
+    {
+        <HelpDialog Current="glossary" OnClose="@(() => helpOpen = false)">
+            <h4>Ways in</h4>
+            <ul>
+                <li><b>Open</b> or drop a <code>glossary.md</code>, with the <code>sketch.motifsketch.json</code> beside it if there is one.</li>
+                <li><b>Paste</b> a glossary's Markdown, straight from an editor or a pull request.</li>
+                <li><b>Repo</b> reads <code>motif/glossary.md</code> from a public GitHub repo's default branch, and its sketch file if it has one. The address then links straight to the review.</li>
+                <li><b>Example</b> is Motif Sketch's own glossary, with its sketch file.</li>
+            </ul>
+            <h4>The review</h4>
+            <ul>
+                <li>Terms are grouped by kind. The chips under the title jump to a group.</li>
+                <li><b>Proposed</b> terms are picked out in orange. <b>Proposed only</b> hides the rest.</li>
+                <li>Notes point to anything that doesn't follow the <a href="https://github.com/motif-dotnet/.github/blob/main/design/glossary.md" target="_blank" rel="noopener">glossary format</a>, or no longer matches the sketch. They never block.</li>
+                <li>With a sketch file, Sketch ids show the element or port's name, and sketch items with no term are listed at the end.</li>
+            </ul>
+            <p class="help">Everything happens in this browser: nothing is uploaded, and there's no sign-in. The glossary is read-only here; change it in the file.</p>
+        </HelpDialog>
+    }
+
+    <ToastList Toaster="Toaster" />
 </div>
 }

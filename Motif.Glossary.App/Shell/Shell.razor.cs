@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Motif.Suite;
 
 namespace Motif.Glossary.App;
 
@@ -14,6 +15,7 @@ public partial class Shell : IDisposable
     private string repoText = "";
     private int dragDepth;
     private bool copied;
+    private bool helpOpen;
     private Links links = new(null, null, _ => { });
     private DotNetObjectReference<Shell>? self;
     private Review? shown;
@@ -22,7 +24,7 @@ public partial class Shell : IDisposable
 
     private string? RepoLinkUrl => App.RepoLinkFragment is { } f ? BaseUrl() + "#" + f : null;
 
-    private MarkupString ThemeIcon => theme switch { "light" => Icons.Sun, "dark" => Icons.Moon, _ => Icons.Monitor };
+    [Inject] private Toaster Toaster { get; set; } = null!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -38,6 +40,7 @@ public partial class Shell : IDisposable
         }
         await Browser.Load();
         theme = Browser.Theme();
+        Toaster.Changed += Refresh;
         self = DotNetObjectReference.Create(this);
         Browser.ListenForFragment(self);
         started = true;
@@ -64,6 +67,12 @@ public partial class Shell : IDisposable
         // A repo review carries its repo link in the address bar; anything else clears a stale one.
         if (App.RepoLinkFragment is { } fragment) Browser.SetFragment(fragment);
         else if (App.Problem is null && RepoLink.TryRead(Browser.Fragment(), out _)) Browser.SetFragment(null);
+        // What went wrong is the outcome of a command, so it's a toast, as in every Motif tool.
+        if (App.Problem is { } problem)
+        {
+            Toaster.Problem("That glossary can't be reviewed", [problem]);
+            App.DismissProblem();
+        }
         StateHasChanged();
     }
 
@@ -154,7 +163,19 @@ public partial class Shell : IDisposable
         Opened();
     }
 
-    private void Toggle(string name) => menu = menu == name ? null : name;
+    private void Toggle(string name)
+    {
+        menu = menu == name ? null : name;
+        helpOpen = false;
+    }
+
+    private void ToggleHelp()
+    {
+        helpOpen = !helpOpen;
+        menu = null;
+    }
+
+    private void Refresh() => InvokeAsync(StateHasChanged);
 
     private void CloseMenus() => menu = null;
 
@@ -188,5 +209,9 @@ public partial class Shell : IDisposable
         _ => s.Name + (s.SketchFileName is { } sketch ? $", with {sketch}" : ""),
     };
 
-    public void Dispose() => self?.Dispose();
+    public void Dispose()
+    {
+        Toaster.Changed -= Refresh;
+        self?.Dispose();
+    }
 }
