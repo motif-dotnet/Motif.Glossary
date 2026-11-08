@@ -10,7 +10,7 @@
 <div class="app @(dragDepth > 0 ? "dragging" : "")" @onclick="CloseMenus"
      @ondragenter="DragEnter" @ondragleave="DragLeave" @ondragover:preventDefault="true" @ondrop="Drop" @ondrop:preventDefault="true">
     <header class="appbar">
-        <ToolSwitcher Current="glossary" Open="@(menu == "tools")" OnToggle="@(() => Toggle("tools"))" />
+        <ToolSwitcher Current="glossary" Repo="@App.Source?.Repo?.ToString()" Open="@(menu == "tools")" OnToggle="@(() => Toggle("tools"))" />
 
         @if (App.Source is { } source)
         {
