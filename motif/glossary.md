@@ -8,10 +8,11 @@ This app is about glossaries, so several terms here name parts of the glossary f
 
 ## Avoid word
 
-A word listed under a term's **Avoid** field: a synonym not to use for that term. The part of a glossary that stops names drifting.
+A word listed under a term's **Avoid** field: a synonym not to use for that term. The part of a glossary that stops names drifting. It can carry a note, in brackets or after a comma ("project, on its own"), saying why or when it's avoided.
 
 - **Kind:** domain concept
 - **Avoid:** synonym, banned word
+- **In code:** `AvoidWord`
 - **See also:** [Term](#term)
 
 ## Example
@@ -20,6 +21,7 @@ The bundled glossary: Motif Sketch's own, with its sketch file. Shown when the R
 
 - **Kind:** domain concept
 - **Avoid:** sample, demo
+- **In code:** `Example`, `SourceKind.Example`
 
 ## Field
 
@@ -40,10 +42,11 @@ The port that reads a glossary file the Reviewer opens or drops in, and a sketch
 
 ## Format note
 
-A gentle note on a term that doesn't follow the glossary format: no kind, a kind outside the seven, more than two kinds, a See also that doesn't resolve, an Avoid word that is itself a term, or a heading out of alphabetical order. Notes never block anything.
+A gentle note on a term that doesn't follow the glossary format: no kind, a kind outside the seven, more than two kinds, a See also that doesn't resolve, an Avoid word that is itself a term (unless its note explains the clash), or a heading out of alphabetical order. Notes never block anything.
 
 - **Kind:** domain concept
 - **Avoid:** error, warning, lint (notes report; they don't fail)
+- **In code:** `FormatNote`, `FormatNotes`
 - **Status:** proposed
 - **See also:** [Sketch note](#sketch-note)
 
@@ -62,6 +65,7 @@ A project's agreed words, kept in `motif/glossary.md`: one term per `##` heading
 
 - **Kind:** domain concept
 - **Avoid:** dictionary, language and ubiquitous language (ambiguous in .NET)
+- **In code:** `Glossary`; read by `GlossaryReader`
 - **See also:** [Term](#term)
 
 ## Glossary Files
@@ -78,6 +82,7 @@ Where a term sits. One of seven: *system*, *actor*, *external system*, *storage*
 
 - **Kind:** domain concept
 - **Avoid:** category, type (that's an element's type in Motif Sketch)
+- **In code:** `Kind`, `Kinds`
 
 ## Motif Glossary
 
@@ -94,6 +99,7 @@ A link ending `#repo=owner/name` that opens straight into a review of that publi
 
 - **Kind:** domain concept
 - **Avoid:** snapshot link (Motif Sketch's word for a link that carries the whole project), share link
+- **In code:** `RepoLink`, `RepoName`
 - **Status:** proposed
 
 ## Repos
@@ -111,6 +117,7 @@ The main view: every term at a glance, grouped by kind, each showing its Avoid w
 
 - **Kind:** domain concept
 - **Avoid:** report, dashboard
+- **In code:** `Review`, `TermReview`, `KindGroup`
 - **Status:** proposed
 
 ## Reviewer
@@ -123,19 +130,31 @@ The person who opens, drops or pastes a glossary, or follows a repo link, and re
 
 ## Sketch file
 
-A Motif Sketch project, kept beside the glossary as `motif/sketch.motifsketch.json`. Motif Glossary reads only its elements' and ports' ids, names and types.
+A Motif Sketch project, kept beside the glossary as `motif/sketch.motifsketch.json`. Motif Glossary reads only its sketch items: their ids, names and types.
 
 - **Kind:** domain concept
 - **Avoid:** sketch, on its own (in Motif Sketch that's the ports-and-adapters view), project (Motif Sketch's word for the file; here, "project" means the app a glossary belongs to)
+- **In code:** `SketchFile`; read by `SketchFileReader`
 - **Status:** proposed
-- **See also:** [Sketch id](#sketch-id)
+- **See also:** [Sketch id](#sketch-id), [Sketch item](#sketch-item)
 
 ## Sketch id
 
 The id in a term's **Sketch** field: the element or port in the sketch file that the term came from. A term can have two. When there's a sketch file, the review shows the name the id points to.
 
 - **Kind:** domain concept
+- **In code:** `Term.SketchIds`, `SketchRef`
 - **See also:** [Sketch file](#sketch-file), [Sketch note](#sketch-note)
+
+## Sketch item
+
+An element, port or adapter in a sketch file, as Motif Glossary reads it: its id, name and type, and the kind a term for it would have. Elements and ports are expected to have a term; adapters usually aren't, since most are named after a technology.
+
+- **Kind:** domain concept
+- **Avoid:** node, element (an element is only one sort of sketch item)
+- **In code:** `SketchItem`
+- **Status:** proposed
+- **See also:** [Sketch file](#sketch-file)
 
 ## Sketch note
 
@@ -143,8 +162,19 @@ A gentle note from comparing the glossary with its sketch file: a sketch id that
 
 - **Kind:** domain concept
 - **Avoid:** error, warning
+- **In code:** `SketchNote`, `SketchNotes`
 - **Status:** proposed
 - **See also:** [Format note](#format-note)
+
+## Source
+
+Where the glossary under review came from: one of the four ways in. A file opened or dropped in, pasted Markdown, a public repo, or the Example.
+
+- **Kind:** domain concept
+- **Avoid:** input, origin
+- **In code:** `Source`, `SourceKind`
+- **Status:** proposed
+- **See also:** [Example](#example), [Repo link](#repo-link)
 
 ## Status
 
@@ -152,6 +182,7 @@ Whether a term is *proposed* or *agreed*. An agent can propose a term; people ag
 
 - **Kind:** domain concept
 - **Avoid:** draft, approved
+- **In code:** `Status`
 
 ## Term
 
@@ -159,6 +190,7 @@ One entry in a glossary: a `##` heading naming it, a short definition, then its 
 
 - **Kind:** domain concept
 - **Avoid:** word, for the whole entry (the heading is the term's name); definition (that's one part of a term)
+- **In code:** `Term`
 - **See also:** [Field](#field), [Glossary](#glossary)
 
 ## User port

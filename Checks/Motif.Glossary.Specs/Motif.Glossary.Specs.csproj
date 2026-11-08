@@ -21,6 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- This repo's own glossary and sketch file are fixtures too (motif/README.md). -->
+    <None Include="..\..\motif\glossary.md" Link="Fixtures\glossary.md" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\motif\sketch.motifsketch.json" Link="Fixtures\sketch.motifsketch.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Motif.Glossary\Motif.Glossary.UseCases\Motif.Glossary.UseCases.csproj" />
     <ProjectReference Include="..\Motif.Glossary.Fakes\Motif.Glossary.Fakes.csproj" />
   </ItemGroup>

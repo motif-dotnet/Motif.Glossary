@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\Motif.Glossary.Domain\Motif.Glossary.Domain.csproj" />
@@ -10,5 +10,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The Example: Motif Sketch's glossary and sketch file, copied from motif-dotnet/Motif.Sketch's motif/ folder. -->
+    <EmbeddedResource Include="Example\glossary.md" LogicalName="Motif.Glossary.example.glossary.md" />
+    <EmbeddedResource Include="Example\sketch.motifsketch.json" LogicalName="Motif.Glossary.example.sketch.motifsketch.json" />
+  </ItemGroup>
 
 </Project>
