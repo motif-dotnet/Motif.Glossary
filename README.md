@@ -37,3 +37,11 @@ dotnet tool restore && dotnet stryker      # mutation testing of the specs
 ```
 
 Mutation testing uses [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/introduction/), a local tool in [dotnet-tools.json](dotnet-tools.json), set up by [stryker-config.json](stryker-config.json). It changes the code under the specs (Domain and UseCases) a little at a time and checks a spec fails each time. The HTML report is written to `StrykerOutput/`.
+
+## Contributing
+
+Bug reports, suggestions and pull requests are welcome; [CONTRIBUTING.md](https://github.com/motif-dotnet/.github/blob/main/CONTRIBUTING.md) says how. Issues labelled [good first issue](https://github.com/motif-dotnet/Motif.Glossary/labels/good%20first%20issue) are a gentle way in. For ideas and questions, start a thread in [Discussions](https://github.com/motif-dotnet/.github/discussions).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
