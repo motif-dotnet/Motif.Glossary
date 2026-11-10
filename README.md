@@ -40,7 +40,7 @@ Mutation testing uses [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/
 
 ## Contributing
 
-Bug reports, suggestions and pull requests are welcome; [CONTRIBUTING.md](https://github.com/motif-dotnet/.github/blob/main/CONTRIBUTING.md) says how. Issues labelled [good first issue](https://github.com/motif-dotnet/Motif.Glossary/labels/good%20first%20issue) are a gentle way in. For ideas and questions, start a thread in [Discussions](https://github.com/motif-dotnet/.github/discussions).
+Bug reports, suggestions and pull requests are welcome; [CONTRIBUTING.md](https://github.com/motif-dotnet/.github/blob/main/CONTRIBUTING.md) says how. For ideas and questions, start a thread in [Discussions](https://github.com/motif-dotnet/.github/discussions).
 
 ## License
 
