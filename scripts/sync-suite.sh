@@ -44,7 +44,8 @@ fi
 if [ -z "$from" ]; then
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
-  git clone --quiet --depth 1 https://github.com/motif-dotnet/.github.git "$tmp/kit"
+  # With LF endings as committed: CRLF ones would show every copied file as changed.
+  git clone --quiet --depth 1 -c core.autocrlf=false https://github.com/motif-dotnet/.github.git "$tmp/kit"
   from="$tmp/kit"
 fi
 kit="$from/brand/web"
