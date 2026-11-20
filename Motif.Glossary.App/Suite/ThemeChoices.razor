@@ -1,0 +1,26 @@
+@* Motif.NET shared web kit: copied from github.com/motif-dotnet/.github/tree/main/brand/web. Don't edit an app's copy. *@
+@namespace Motif.Suite
+@using Microsoft.AspNetCore.Components.Web
+
+@* System, Light or Dark, as items for a menu list: the Theme menu's own, or a tool's More menu on phones. *@
+@foreach (var (value, label) in Choices)
+{
+    <button role="menuitemradio" aria-checked="@(Theme == value ? "true" : "false")" @onclick="() => ThemeChanged.InvokeAsync(value)">@IconFor(value) @label</button>
+}
+<div class="note">Remembered in this browser only.</div>
+
+@code {
+    private static readonly (string Value, string Label)[] Choices = [("system", "System"), ("light", "Light"), ("dark", "Dark")];
+
+    /// <summary>"system", "light" or "dark".</summary>
+    [Parameter] public string Theme { get; set; } = "system";
+
+    [Parameter] public EventCallback<string> ThemeChanged { get; set; }
+
+    internal static MarkupString IconFor(string theme) => theme switch
+    {
+        "light" => SuiteIcons.Sun,
+        "dark" => SuiteIcons.Moon,
+        _ => SuiteIcons.Monitor,
+    };
+}
