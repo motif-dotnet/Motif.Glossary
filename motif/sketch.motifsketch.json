@@ -134,15 +134,10 @@
             "technology": "File picker and drag and drop (JS interop)",
             "description": "A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one",
             "kind": "real",
+            "seam": "Local Files",
             "sources": [
               "9e1a0a04"
             ]
-          },
-          {
-            "id": "9e1a0d06",
-            "name": "Fake Local Files",
-            "kind": "fake",
-            "sources": []
           }
         ]
       }

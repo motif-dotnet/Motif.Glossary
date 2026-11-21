@@ -21,8 +21,8 @@ Motif.Glossary.sln
     Motif.Glossary.Domain/
     Motif.Glossary.UseCases/
   Adapters/
-    Motif.Glossary.Repos/
-    Motif.Glossary.Files/
+    Motif.Glossary.ForOpeningRepos/
+    Motif.Glossary.ForOpeningFiles/
   Checks/
     Motif.Glossary.Fakes/
     Motif.Glossary.Specs/
@@ -33,8 +33,8 @@ Motif.Glossary.sln
 | `Motif.Glossary.App` | `Motif.Glossary.App/` | `blazorwasm` | `Motif.Glossary.App` | The app: runnable adapter on the User port |
 | `Motif.Glossary.Domain` | `Motif.Glossary/Motif.Glossary.Domain/` | `classlib` | `Motif.Glossary` | Domain-specific business rules |
 | `Motif.Glossary.UseCases` | `Motif.Glossary/Motif.Glossary.UseCases/` | `classlib` | `Motif.Glossary` | Application rules (use cases) and all port interfaces |
-| `Motif.Glossary.Repos` | `Adapters/Motif.Glossary.Repos/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the Repos port |
-| `Motif.Glossary.Files` | `Adapters/Motif.Glossary.Files/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the Files port |
+| `Motif.Glossary.ForOpeningRepos` | `Adapters/Motif.Glossary.ForOpeningRepos/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the For opening repos port |
+| `Motif.Glossary.ForOpeningFiles` | `Adapters/Motif.Glossary.ForOpeningFiles/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the For opening files port |
 | `Motif.Glossary.Fakes` | `Checks/Motif.Glossary.Fakes/` | `classlib` | `Motif.Glossary.Fakes` | Fake driven adapters, for specs |
 | `Motif.Glossary.Specs` | `Checks/Motif.Glossary.Specs/` | `xunit` | `Motif.Glossary.Specs` | Specs: the checks on every driving port |
 
@@ -45,17 +45,17 @@ Motif.Glossary.sln
 | `Motif.Glossary.App` | `Motif.Glossary.UseCases` |
 | `Motif.Glossary.Domain` | nothing |
 | `Motif.Glossary.UseCases` | `Motif.Glossary.Domain` |
-| `Motif.Glossary.Repos` | `Motif.Glossary.UseCases` |
-| `Motif.Glossary.Files` | `Motif.Glossary.UseCases` |
-| `Motif.Glossary.Fakes` | `Motif.Glossary.UseCases` |
-| `Motif.Glossary.Specs` | `Motif.Glossary.UseCases`, `Motif.Glossary.Fakes` |
+| `Motif.Glossary.ForOpeningRepos` | `Motif.Glossary.UseCases` |
+| `Motif.Glossary.ForOpeningFiles` | `Motif.Glossary.UseCases` |
+| `Motif.Glossary.Fakes` | `Motif.Glossary.UseCases`, `Motif.Glossary.ForOpeningFiles` |
+| `Motif.Glossary.Specs` | `Motif.Glossary.UseCases`, `Motif.Glossary.Fakes`, `Motif.Glossary.ForOpeningFiles` |
 
 Rules:
 
 - `Motif.Glossary.Domain` references nothing.
 - `Motif.Glossary.UseCases` references `Motif.Glossary.Domain` only.
 - Every adapter project references `Motif.Glossary.UseCases` only. **Adapters never reference each other.**
-- The specs project may also reference the fakes it wires up by hand.
+- The fakes project also references the adapter projects whose Seams it fakes, and the specs project references them too, so specs run the real adapters over fake Fittings.
 - These references are the dependency rule. Don't add others.
 
 ## 4. Namespaces
@@ -76,8 +76,8 @@ Motif.Glossary.UseCases/
   UserQueries.cs
   MotifGlossaryApplication.cs
   Ports/
-    Repos.cs
-    Files.cs
+    ForOpeningRepos.cs
+    ForOpeningFiles.cs
 ```
 
 ### User (driving)
@@ -104,30 +104,30 @@ public interface UserQueries
 }
 ```
 
-### Repos (driven)
+### For opening repos (driven)
 
 Reads a public repo's motif/glossary.md and, when it's there, its sketch, from the default branch
 
-`Ports/Repos.cs`:
+`Ports/ForOpeningRepos.cs`:
 
 ```csharp
 namespace Motif.Glossary;
 
-public interface Repos
+public interface ForOpeningRepos
 {
 }
 ```
 
-### Files (driven)
+### For opening files (driven)
 
 Reads a glossary.md the Reviewer opens or drops in, and a sketch file with it if there is one
 
-`Ports/Files.cs`:
+`Ports/ForOpeningFiles.cs`:
 
 ```csharp
 namespace Motif.Glossary;
 
-public interface Files
+public interface ForOpeningFiles
 {
 }
 ```
@@ -142,17 +142,50 @@ Kinds: **Real** is the production adapter; **Fake** is a simple in-process stand
 |---|---|---|---|---|---|---|
 | User | Web App | Real | Blazor WebAssembly UI | `Motif.Glossary.App` | - | Context diagram: Reviewer |
 | User | Specs | Checks | xUnit | `Motif.Glossary.Specs` | - | Added in the sketch |
-| Repos | GitHub | Real | HttpClient (raw.githubusercontent.com) | `Motif.Glossary.Repos` | `GitHubRepos` | Context diagram: GitHub |
-| Repos | Fake Repos | Fake | - | `Motif.Glossary.Fakes` (`Repos/`) | `FakeRepos` | Added in the sketch |
-| Files | Browser Files | Real | File picker and drag and drop (JS interop) | `Motif.Glossary.Files` | `BrowserFiles` | Context diagram: Glossary Files |
-| Files | Fake Files | Fake | - | `Motif.Glossary.Fakes` (`Files/`) | `FakeFiles` | Added in the sketch |
+| For opening repos | GitHub | Real | HttpClient (raw.githubusercontent.com) | `Motif.Glossary.ForOpeningRepos` | `ForOpeningReposViaGitHub` | Context diagram: GitHub |
+| For opening repos | Fake GitHub | Fake | - | `Motif.Glossary.Fakes` (`ForOpeningRepos/`) | `FakeGitHubForOpeningRepos` | Added in the sketch |
+| For opening files | Picker and Drop | Real | File picker and drag and drop (JS interop) | `Motif.Glossary.ForOpeningFiles` | `ForOpeningFilesViaPickerAndDrop` | Context diagram: Glossary Files |
 
 For each driven adapter, add the stub class named above implementing its port's interface, in its project's namespace and in the folder shown. For example:
 
 ```csharp
 namespace Motif.Glossary.Adapters;
 
-public sealed class GitHubRepos : Repos
+public sealed class ForOpeningReposViaGitHub : ForOpeningRepos
+{
+}
+```
+
+Deep adapters: an adapter with a Seam keeps its own rules, and reaches the outside world through the Seam, an interface it owns. The Seam's Fitting makes one outside call per member, with no branches worth testing. Specs run the real adapter over its fake Fitting, so its port has no fake of its own. The Seam and its real Fitting go in the adapter's project and namespace; the fake Fitting goes in the fakes project, in the port's folder.
+
+| Port | Adapters | Seam | Real Fitting | Fake Fitting |
+|---|---|---|---|---|
+| For opening files | Picker and Drop | `LocalFiles` | `JsInteropLocalFiles` | `FakeLocalFiles` (`ForOpeningFiles/`) |
+
+For each Seam, add the empty interface, its real Fitting and its fake Fitting. Each adapter with a Seam takes it in its one constructor. For example:
+
+```csharp
+namespace Motif.Glossary.Adapters;
+
+public interface LocalFiles
+{
+}
+
+public sealed class JsInteropLocalFiles : LocalFiles
+{
+}
+
+public sealed class ForOpeningFilesViaPickerAndDrop(LocalFiles localFiles) : ForOpeningFiles
+{
+}
+```
+
+```csharp
+using Motif.Glossary.Adapters;
+
+namespace Motif.Glossary.Fakes;
+
+public sealed class FakeLocalFiles : LocalFiles
 {
 }
 ```
@@ -163,15 +196,15 @@ Adapter notes:
 
 - **Web App** (`Motif.Glossary.App`): The review page. Pasted glossaries reach the application through it
 - **Specs** (`Motif.Glossary.Specs`): Checks that drive the application through the User port, using the fake driven adapters
-- **GitHub** (`Motif.Glossary.Repos`): Public repos whose motif/ folder holds the glossary and, often, the sketch
-- **Browser Files** (`Motif.Glossary.Files`): A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one
+- **GitHub** (`Motif.Glossary.ForOpeningRepos`): Public repos whose motif/ folder holds the glossary and, often, the sketch
+- **Picker and Drop** (`Motif.Glossary.ForOpeningFiles`): A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one
 
 ## 7. Fakes and specs
 
-- `Motif.Glossary.Fakes` (`Checks/Motif.Glossary.Fakes/`): every fake driven adapter, with a folder per port (`Repos/`, `Files/`). The namespace is flat: `Motif.Glossary.Fakes`.
+- `Motif.Glossary.Fakes` (`Checks/Motif.Glossary.Fakes/`): every fake Fitting, and every fake of a port whose adapters are their own Fittings, with a folder per port (`ForOpeningRepos/`, `ForOpeningFiles/`). The namespace is flat: `Motif.Glossary.Fakes`.
 - `Motif.Glossary.Specs` (`Checks/Motif.Glossary.Specs/`): xUnit. Packages: `Microsoft.NET.Test.Sdk`, `xunit`, `xunit.runner.visualstudio`, `coverlet.collector`, `AwesomeAssertions`. Keep the template's packages and add `AwesomeAssertions`.
-  Add one placeholder spec class with a single passing `[Fact]`, so `dotnet test` runs. Specs wire the fake adapters up by hand; there is no composition root yet.
-- The browser adapters (`Motif.Glossary.Repos`, `Motif.Glossary.Files`) also take `Microsoft.JSInterop`: each reaches the browser through a small JS module it ships as a static web asset.
+  Add one placeholder spec class with a single passing `[Fact]`, so `dotnet test` runs. Specs wire the real adapters over their fake Fittings, and the other fakes, up by hand; there is no composition root yet.
+- The browser adapters (`Motif.Glossary.ForOpeningRepos`, `Motif.Glossary.ForOpeningFiles`) also take `Microsoft.JSInterop`: each reaches the browser through a small JS module it ships as a static web asset.
 - Use the latest stable package versions. Use AwesomeAssertions (`.Should()` style) in specs.
 
 ## 8. Not placed
@@ -202,7 +235,7 @@ Instructions for the coding agent:
    dotnet_naming_style.pascal_case.capitalization = pascal_case
    ```
 
-6. Add the port interfaces and the application stub from section 5, and the adapter stub classes from section 6.
+6. Add the port interfaces and the application stub from section 5, and the adapter stub classes, and each Seam with its Fittings, from section 6.
 7. Add the placeholder spec from section 7.
 8. Check that `dotnet build` and `dotnet test` both succeed.
 
@@ -210,6 +243,6 @@ Ground rules:
 
 - **Stubs only.** No functionality, no interface members, no wiring.
 - **No composition root** (no host project, no dependency injection setup) in this version.
-- **No `I` prefix** on interfaces. Implementations carry the meaningful extra (`FileSystemStorage`), never `Impl`.
+- **No `I` prefix** on interfaces. An adapter is named for its port, then its way (`ForStoringViaFileSystem`); other implementations carry the meaningful extra (`FileSystemFolder`), never `Impl`.
 - **Two-letter acronyms stay in capitals** in code names (`IndexedDB`, `UI`).
 - Don't add projects, references or packages the plan doesn't list.
