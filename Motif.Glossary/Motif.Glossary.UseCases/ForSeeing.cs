@@ -1,7 +1,7 @@
 namespace Motif.Glossary;
 
-/// <summary>What the Reviewer sees.</summary>
-public interface UserQueries
+/// <summary>The User port's query half: what the Reviewer sees.</summary>
+public interface ForSeeing
 {
     /// <summary>The review of the glossary that's open, or null before one is.</summary>
     Review? Review { get; }

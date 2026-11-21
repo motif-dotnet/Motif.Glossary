@@ -237,6 +237,6 @@ One entry in a glossary: a `##` heading naming it, a short definition, then its 
 The driving port people use. Its real adapter is the Web App, the review page; pasted glossaries come in through it too.
 
 - **Kind:** port
-- **Avoid:** user, for a person (say Reviewer)
-- **In code:** `UserTasks`, `UserQueries`
+- **Avoid:** user, for a person (say Reviewer); `UserTasks`, `UserQueries` (the halves' old names)
+- **In code:** `ForDoing` (the commands), `ForSeeing` (the queries)
 - **Sketch:** `9e1a0c01`

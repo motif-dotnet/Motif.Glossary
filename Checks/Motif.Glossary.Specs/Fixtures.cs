@@ -14,8 +14,8 @@ public sealed class Fixture
         new ForOpeningReposViaGitHub(GitHub),
         new ForOpeningFilesViaPickerAndDrop(LocalFiles));
 
-    public UserTasks Tasks => App;
-    public UserQueries Queries => App;
+    public ForDoing Tasks => App;
+    public ForSeeing Queries => App;
 
     public static string OwnGlossary => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "glossary.md"));
     public static string OwnSketchFile => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "sketch.motifsketch.json"));

@@ -1,7 +1,7 @@
 namespace Motif.Glossary;
 
 /// <summary>The application: reads a glossary from one of the four sources and keeps its review.</summary>
-public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFiles files) : UserTasks, UserQueries
+public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFiles files) : ForDoing, ForSeeing
 {
     private int attempt;
 

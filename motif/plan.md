@@ -60,7 +60,7 @@ Rules:
 
 ## 4. Namespaces
 
-- `Motif.Glossary.Domain` and `Motif.Glossary.UseCases` both use the plain `Motif.Glossary` namespace, so the port interfaces are `Motif.Glossary.UserTasks` and so on.
+- `Motif.Glossary.Domain` and `Motif.Glossary.UseCases` both use the plain `Motif.Glossary` namespace, so the port interfaces are `Motif.Glossary.ForDoing` and so on.
 - Every other project uses the namespace in section 2. Real and simulated adapters share one namespace, and so do the fakes.
 - Folders inside a project don't change its namespace.
 - Set `RootNamespace` in each `.csproj` to its namespace, so new files created in an IDE get it.
@@ -72,8 +72,8 @@ All port interfaces live in `Motif.Glossary.UseCases`, namespace `Motif.Glossary
 
 ```
 Motif.Glossary.UseCases/
-  UserTasks.cs
-  UserQueries.cs
+  ForDoing.cs
+  ForSeeing.cs
   MotifGlossaryApplication.cs
   Ports/
     ForOpeningRepos.cs
@@ -82,24 +82,24 @@ Motif.Glossary.UseCases/
 
 ### User (driving)
 
-The User port: how people (and anything acting for them) use the application. It has two halves, commands and queries.
+The User port: how people (and anything acting for them) use the application. It has two halves: `ForDoing`, the commands, and `ForSeeing`, the queries.
 
-`UserTasks.cs`:
+`ForDoing.cs`:
 
 ```csharp
 namespace Motif.Glossary;
 
-public interface UserTasks
+public interface ForDoing
 {
 }
 ```
 
-`UserQueries.cs`:
+`ForSeeing.cs`:
 
 ```csharp
 namespace Motif.Glossary;
 
-public interface UserQueries
+public interface ForSeeing
 {
 }
 ```
@@ -132,7 +132,7 @@ public interface ForOpeningFiles
 }
 ```
 
-Also add one stub class, `MotifGlossaryApplication` in `Motif.Glossary.UseCases` (namespace `Motif.Glossary`), implementing the driving interfaces (`UserTasks`, `UserQueries`). It is the application itself; its constructor will later take the driven ports.
+Also add one stub class, `MotifGlossaryApplication` in `Motif.Glossary.UseCases` (namespace `Motif.Glossary`), implementing the driving interfaces (`ForDoing`, `ForSeeing`). It is the application itself; its constructor will later take the driven ports.
 
 ## 6. Adapters
 

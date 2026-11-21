@@ -1,7 +1,7 @@
 namespace Motif.Glossary;
 
-/// <summary>What the Reviewer does: the four ways in, and the "Proposed only" filter.</summary>
-public interface UserTasks
+/// <summary>The User port's command half: the Reviewer's four ways in, and the "Proposed only" filter.</summary>
+public interface ForDoing
 {
     /// <summary>Reviews the Example: Motif Sketch's glossary with its sketch file.</summary>
     void OpenExample();
