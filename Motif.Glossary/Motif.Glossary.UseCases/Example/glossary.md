@@ -21,22 +21,14 @@ The person who sketches the context diagram and then the ports and adapters, exp
 - **In code:** `AppMode.Architect`
 - **Sketch:** `c5a10a02`
 
-## Autosave
-
-Keeps the work in progress, and the handle of the file it came from, in the browser between visits, so a refresh loses nothing. Only one tab owns autosave at a time. A safety net, not saving: work is still unsaved until it's written to a file.
-
-- **Kind:** port
-- **In code:** `Autosave`
-- **Sketch:** `d6b20c03`
-- **See also:** [Browser Storage](#browser-storage)
-
 ## Browser Storage
 
-Where autosaved work is kept: the browser's IndexedDB.
+Where autosaved work is kept: the browser's IndexedDB. Also the Seam the autosave adapter reaches it through, with the lock the tabs share.
 
 - **Kind:** storage
+- **In code:** `BrowserStorage` (the Seam), `JsInteropBrowserStorage`, `FakeBrowserStorage`
 - **Sketch:** `c5a10a06`
-- **See also:** [Autosave](#autosave)
+- **See also:** [For autosaving](#for-autosaving), [Seam](#seam)
 
 ## Checks adapter
 
@@ -49,11 +41,20 @@ An adapter that drives the application through a driving port and checks what it
 
 ## Clipboard
 
-Where Copy link puts a snapshot link, ready to paste. The same name is used for the external system and for the port the app reaches it through.
+Where Copy link puts a snapshot link, ready to paste.
 
-- **Kind:** external system, port
-- **In code:** `Clipboard`
-- **Sketch:** `c5a10a0a` (element), `d6b20c06` (port)
+- **Kind:** external system
+- **Sketch:** `c5a10a0a`
+- **See also:** [For copying](#for-copying)
+
+## Code root
+
+The root of the solution plan's project names, such as `Motif.Sketch`. Set on the system when its name isn't the one the code should use; blank means it's made from the system name.
+
+- **Kind:** domain concept
+- **In code:** `Element.CodeRoot`, `CodeName.Root`
+- **Status:** proposed
+- **See also:** [System](#system), [Solution plan](#solution-plan)
 
 ## Context diagram
 
@@ -64,13 +65,21 @@ The first view: the system in the middle, with the actors, external systems and 
 - **In code:** `ContextDiagram`
 - **See also:** [Element](#element), [Relationship](#relationship)
 
+## Deep adapter
+
+An adapter with real work behind a small port, whose own logic runs in every spec because only its Fitting is faked. In the sketch, a driven adapter with a Seam.
+
+- **Kind:** domain concept
+- **Avoid:** deep port (depth belongs to the module, not its interface)
+- **See also:** [Fitting](#fitting), [Seam](#seam)
+
 ## Diagram Exports
 
-Writes the context diagram and the sketch as SVG pictures, cropped to the content and always in the light palette. The same name is used for the storage they're written to and for the port.
+The context diagram and the sketch as SVG pictures, cropped to the content and always in the light palette.
 
-- **Kind:** storage, port
-- **In code:** `DiagramExports`
-- **Sketch:** `c5a10a07` (element), `d6b20c04` (port)
+- **Kind:** storage
+- **Sketch:** `c5a10a07`
+- **See also:** [For exporting diagrams](#for-exporting-diagrams)
 
 ## Driving and driven
 
@@ -109,8 +118,111 @@ Another system the system talks to, drawn on the right of the context diagram.
 A simple in-process stand-in for a real adapter, for fast specs. Named "Fake ⟨Port⟩" by default.
 
 - **Kind:** domain concept
-- **Avoid:** mock, stub (stub means something else here: see [Solution Stubs](#solution-stubs))
+- **Avoid:** mock, stub (stub means something else here: see [Solution plan](#solution-plan))
 - **In code:** `AdapterKind.Fake`; `Fake<Port>` classes in `Motif.Sketch.Fakes`
+- **See also:** [Fitting](#fitting): a port whose adapters all have Seams needs no fake of its own
+
+## Fitting
+
+The thin part of an adapter that touches the outside world. Each member is one call to it, with no branches worth testing. There's a real Fitting and a fake one, and specs fake the Fitting. The plan names them `JsInterop<Seam>` (in a browser app) and `Fake<Seam>`.
+
+- **Kind:** domain concept
+- **Avoid:** core (the domain), driver (the driving side), gateway, wrapper
+- **In code:** `PlannedSeam.RealFitting`, `PlannedSeam.FakeFitting`
+- **See also:** [Seam](#seam)
+
+## For autosaving
+
+The port that keeps the work in progress, and the handle of the file it came from, in the browser between visits, so a refresh loses nothing. Only one tab owns autosave at a time. Autosave is a safety net, not saving: work is still unsaved until it's written to a file.
+
+- **Kind:** port
+- **Avoid:** Autosave, for the port (its old name)
+- **In code:** `ForAutosaving`
+- **Sketch:** `d6b20c03`
+- **See also:** [Browser Storage](#browser-storage)
+
+## For copying
+
+The port Copy link puts a snapshot link on.
+
+- **Kind:** port
+- **Avoid:** Clipboard, for the port (its old name)
+- **In code:** `ForCopying`
+- **Sketch:** `d6b20c06`
+- **See also:** [Clipboard](#clipboard)
+
+## For exporting diagrams
+
+The port that writes the context diagram and the sketch as SVG pictures.
+
+- **Kind:** port
+- **Avoid:** Diagram Exports, for the port (its old name)
+- **In code:** `ForExportingDiagrams`
+- **Sketch:** `d6b20c04`
+- **See also:** [Diagram Exports](#diagram-exports)
+
+## For exporting the glossary
+
+The port Export glossary goes through: it opens the project's glossary and writes it back with the terms the sketch adds.
+
+- **Kind:** port
+- **Avoid:** Glossaries (its old name)
+- **In code:** `ForExportingTheGlossary`, `GlossaryExport`
+- **Status:** proposed
+- **Sketch:** `d6b20c08`
+- **See also:** [Glossary Files](#glossary-files)
+
+## For exporting the plan
+
+The port the solution plan is handed to. Today it writes a Markdown file; a later version may add a GitHub adapter that builds the stubs in a repo.
+
+- **Kind:** port
+- **Avoid:** Solution Stubs (its old name)
+- **In code:** `ForExportingThePlan`
+- **Sketch:** `d6b20c05`
+- **See also:** [Solution plan](#solution-plan)
+
+## For opening repos
+
+The port that reads a public repo's sketch.
+
+- **Kind:** port
+- **Avoid:** Repos (its old name)
+- **In code:** `ForOpeningRepos`
+- **Status:** proposed
+- **Sketch:** `d6b20c07`
+- **See also:** [GitHub](#github)
+
+## For storing projects
+
+The port that opens and saves project files.
+
+- **Kind:** port
+- **Avoid:** Projects, for the port (its old name)
+- **In code:** `ForStoringProjects`
+- **Sketch:** `d6b20c02`
+- **See also:** [Project Files](#project-files)
+
+## GitHub
+
+Where a project's repo lives. Motif Sketch reads a public repo's sketch from its default branch, through the For opening repos port, when it's opened from a repo link.
+
+- **Kind:** external system
+- **In code:** `ForOpeningReposViaGitHub` (the adapter), `FakeGitHub` (its fake Fitting, behind `HttpMessageHandler`)
+- **Status:** proposed
+- **Sketch:** `c5a10a0c`
+- **See also:** [Repo link](#repo-link), [For opening repos](#for-opening-repos)
+
+## Glossary Files
+
+The project's glossary, `motif/glossary.md`. Export glossary adds an entry, marked *proposed*, for each actor, external system, storage and port in the sketch that it has no term for yet, found by **Sketch** id or name, and leaves everything else in the file as it was. Also the Seam the glossary adapter reaches it through.
+
+- **Kind:** storage
+- **Avoid:** dictionary, vocabulary
+- **In code:** `GlossaryFiles` (the Seam), `JsInteropGlossaryFiles`, `FakeGlossaryFiles`
+- **Status:** proposed
+- **Sketch:** `c5a10a0b`
+- **See also:** [For exporting the glossary](#for-exporting-the-glossary), [Seam](#seam)
 
 ## Motif Sketch
 
@@ -161,23 +273,16 @@ One system's context diagram and, once started, its sketch, saved together as on
 - **Kind:** domain concept
 - **Avoid:** document, workspace, diagram (a project holds two)
 - **In code:** `Project`
-- **See also:** [Projects](#projects), [Planned project](#planned-project)
+- **See also:** [For storing projects](#for-storing-projects), [Planned project](#planned-project)
 
 ## Project Files
 
-Where projects are saved: local `.motifsketch.json` files, saved in place or downloaded.
+Where projects are saved: local `.motifsketch.json` files, saved in place or downloaded. Also the Seam the project files adapter reaches them through.
 
 - **Kind:** storage
+- **In code:** `ProjectFiles` (the Seam), `JsInteropProjectFiles`, `FakeProjectFiles`
 - **Sketch:** `c5a10a05`
-- **See also:** [Projects](#projects)
-
-## Projects
-
-The port that opens and saves project files.
-
-- **Kind:** port
-- **In code:** `Projects`
-- **Sketch:** `d6b20c02`
+- **See also:** [For storing projects](#for-storing-projects), [Seam](#seam)
 
 ## Real
 
@@ -193,6 +298,25 @@ The line joining an element to the system. Every element except the system has e
 - **Kind:** domain concept
 - **Avoid:** link (that's a snapshot link), edge, connection
 - **In code:** `Relationship`, `RelationshipDirection`
+
+## Repo link
+
+A link ending `#repo=owner/name`, naming a public GitHub repo. Every Motif tool opens that repo's `motif/` folder from it, and the tool switcher carries it from one tool to the next, so switching tools stays on the same project. Motif Sketch opens the repo's sketch in Viewer mode.
+
+- **Kind:** domain concept
+- **Avoid:** project link (a project is a file), share link
+- **In code:** `RepoLink`, `RepoName`
+- **Status:** proposed
+- **See also:** [GitHub](#github), [Snapshot link](#snapshot-link)
+
+## Seam
+
+The interface between an adapter and its Fitting, owned by the adapter and named for what it reaches (after Michael Feathers: a place where behaviour can be swapped without editing the code around it). Not a kind of port. In the sketch, it's a property of a driven real or simulated adapter, and nothing is drawn for it yet.
+
+- **Kind:** domain concept
+- **Avoid:** inner port (it would be mistaken for a port in the sketch)
+- **In code:** `Adapter.Seam`, `PlannedSeam`
+- **See also:** [Fitting](#fitting)
 
 ## Secondary actor
 
@@ -233,15 +357,7 @@ The Markdown plan Motif Sketch exports: the .NET solution a coding agent stubs o
 - **Avoid:** spec, stub (the plan describes the stubs; it isn't one)
 - **In code:** `SolutionPlan`, `SolutionPlanner`, `PlanMarkdown`
 - **Sketch:** `c5a10a09` (the storage is named Solution Plans)
-- **See also:** [Solution Stubs](#solution-stubs)
-
-## Solution Stubs
-
-The port the solution plan is handed to, to be built. Today it writes a Markdown file; a later version may add a GitHub adapter that builds the stubs in a repo.
-
-- **Kind:** port
-- **In code:** `SolutionStubs`
-- **Sketch:** `d6b20c05`
+- **See also:** [For exporting the plan](#for-exporting-the-plan)
 
 ## Source
 
@@ -285,13 +401,13 @@ The elements not yet placed in the sketch. Dragging one onto a port, the hexagon
 The driving port people use. Always present in a sketch, and can't be deleted. Its real adapter here is the Web App.
 
 - **Kind:** port
-- **Avoid:** user, for a person (say Architect or Viewer)
-- **In code:** `UserTasks`, `UserQueries`
+- **Avoid:** user, for a person (say Architect or Viewer); `UserTasks`, `UserQueries` (the halves' old names)
+- **In code:** `ForDoing` (the commands), `ForSeeing` (the queries)
 - **Sketch:** `d6b20c01`
 
 ## Viewer
 
-Someone who opens a snapshot link to look at a shared project, read-only. Also the read-only mode the app opens in for them, which never touches autosave.
+Someone who opens a snapshot link to look at a shared project, or a repo link to look at a repo's sketch, read-only. Also the read-only mode the app opens in for them, which never touches autosave.
 
 - **Kind:** actor
 - **Avoid:** reader, guest

@@ -6,9 +6,10 @@
       {
         "id": "c5a10a01",
         "type": "system",
-        "name": "Motif.Sketch",
+        "name": "Motif Sketch",
         "description": "Sketch a context diagram, turn it into a ports-and-adapters sketch, then export the diagrams and a solution plan",
         "technology": "Blazor WebAssembly (GitHub Pages)",
+        "codeRoot": "Motif.Sketch",
         "x": 0,
         "y": 0,
         "pinned": false
@@ -27,8 +28,8 @@
         "id": "c5a10a08",
         "type": "primaryActor",
         "name": "Viewer",
-        "description": "Opens a diagram someone shared, read-only",
-        "technology": "Web browser (snapshot link)",
+        "description": "Opens a diagram someone shared, or a repo's sketch, read-only",
+        "technology": "Web browser (snapshot or repo link)",
         "x": -375,
         "y": 65,
         "pinned": false
@@ -40,7 +41,7 @@
         "description": "Where Copy link puts a snapshot link, ready to paste",
         "technology": "Browser Clipboard API",
         "x": 345,
-        "y": -285,
+        "y": -415,
         "pinned": false
       },
       {
@@ -82,6 +83,26 @@
         "x": 345,
         "y": 285,
         "pinned": false
+      },
+      {
+        "id": "c5a10a0b",
+        "type": "storage",
+        "name": "Glossary Files",
+        "description": "The project's glossary, motif/glossary.md, which Export glossary adds the sketch's terms to",
+        "technology": "Local files (Markdown, saved in place or downloaded)",
+        "x": 345,
+        "y": 415,
+        "pinned": false
+      },
+      {
+        "id": "c5a10a0c",
+        "type": "externalSystem",
+        "name": "GitHub",
+        "description": "Public repos, whose motif/ folder holds a project's sketch",
+        "technology": "raw.githubusercontent.com",
+        "x": 345,
+        "y": -285,
+        "pinned": false
       }
     ],
     "relationships": [
@@ -96,7 +117,7 @@
         "id": "c5a10b07",
         "from": "c5a10a08",
         "to": "c5a10a01",
-        "label": "Views shared diagrams",
+        "label": "Opens snapshot and repo links",
         "direction": "oneWay"
       },
       {
@@ -131,7 +152,21 @@
         "id": "c5a10b09",
         "from": "c5a10a01",
         "to": "c5a10a0a",
-        "label": "Copies share links",
+        "label": "Copies snapshot links",
+        "direction": "oneWay"
+      },
+      {
+        "id": "c5a10b0a",
+        "from": "c5a10a01",
+        "to": "c5a10a0b",
+        "label": "Adds terms to the glossary",
+        "direction": "oneWay"
+      },
+      {
+        "id": "c5a10b0b",
+        "from": "c5a10a01",
+        "to": "c5a10a0c",
+        "label": "Reads a repo's sketch",
         "direction": "oneWay"
       }
     ]
@@ -148,7 +183,7 @@
             "id": "d6b20d01",
             "name": "Web App",
             "technology": "Blazor WebAssembly UI",
-            "description": "One app for the Architect (full editing) and the Viewer (read-only, opened from a snapshot link)",
+            "description": "One app for the Architect (full editing) and the Viewer (read-only, opened from a snapshot link or a repo link)",
             "kind": "real",
             "sources": [
               "c5a10a02",
@@ -167,7 +202,7 @@
       },
       {
         "id": "d6b20c02",
-        "name": "Projects",
+        "name": "For storing projects",
         "description": "Opens and saves project files",
         "side": "driven",
         "isUser": false,
@@ -178,21 +213,16 @@
             "technology": "File System Access API, download fallback",
             "description": "Saved projects: one file per system holding the context diagram and, once started, its ports-and-adapters sketch",
             "kind": "real",
+            "seam": "Project Files",
             "sources": [
               "c5a10a05"
             ]
-          },
-          {
-            "id": "d6b20d04",
-            "name": "Fake Projects",
-            "kind": "fake",
-            "sources": []
           }
         ]
       },
       {
         "id": "d6b20c03",
-        "name": "Autosave",
+        "name": "For autosaving",
         "description": "Keeps the work in progress and its file handle between visits",
         "side": "driven",
         "isUser": false,
@@ -203,21 +233,16 @@
             "technology": "Browser storage",
             "description": "Autosaved work in progress and its file handle, so a refresh or closed tab loses nothing and Save still goes to the same file",
             "kind": "real",
+            "seam": "Browser Storage",
             "sources": [
               "c5a10a06"
             ]
-          },
-          {
-            "id": "d6b20d06",
-            "name": "Fake Autosave",
-            "kind": "fake",
-            "sources": []
           }
         ]
       },
       {
         "id": "d6b20c04",
-        "name": "Diagram Exports",
+        "name": "For exporting diagrams",
         "description": "Writes the context diagram and the sketch as pictures",
         "side": "driven",
         "isUser": false,
@@ -234,7 +259,7 @@
           },
           {
             "id": "d6b20d08",
-            "name": "Fake Diagram Exports",
+            "name": "Fake for exporting diagrams",
             "kind": "fake",
             "sources": []
           }
@@ -242,14 +267,14 @@
       },
       {
         "id": "d6b20c05",
-        "name": "Solution Stubs",
+        "name": "For exporting the plan",
         "description": "Hands the solution stub on to be built; v2 may add a GitHub adapter that inflates it in a repo",
         "side": "driven",
         "isUser": false,
         "adapters": [
           {
             "id": "d6b20d09",
-            "name": "Markdown Plan",
+            "name": "Markdown File",
             "technology": "Browser Files (File System Access API, download fallback)",
             "description": "The solution stub plan a coding agent builds from",
             "kind": "real",
@@ -259,7 +284,7 @@
           },
           {
             "id": "d6b20d10",
-            "name": "Fake Solution Stubs",
+            "name": "Fake for exporting the plan",
             "kind": "fake",
             "sources": []
           }
@@ -267,14 +292,14 @@
       },
       {
         "id": "d6b20c06",
-        "name": "Clipboard",
+        "name": "For copying",
         "description": "Takes the snapshot link when the Architect copies it",
         "side": "driven",
         "isUser": false,
         "adapters": [
           {
             "id": "d6b20d12",
-            "name": "Browser",
+            "name": "Browser Clipboard",
             "technology": "Browser Clipboard API (JS interop)",
             "description": "Where Copy link puts a snapshot link, ready to paste",
             "kind": "real",
@@ -284,9 +309,54 @@
           },
           {
             "id": "d6b20d13",
-            "name": "Fake Clipboard",
+            "name": "Fake for copying",
             "kind": "fake",
             "sources": []
+          }
+        ]
+      },
+      {
+        "id": "d6b20c07",
+        "name": "For opening repos",
+        "description": "Reads a public GitHub repo's sketch from its default branch",
+        "side": "driven",
+        "isUser": false,
+        "adapters": [
+          {
+            "id": "d6b20d14",
+            "name": "GitHub",
+            "technology": "raw.githubusercontent.com (HttpClient)",
+            "description": "Public repos, whose motif/ folder holds a project's sketch",
+            "kind": "real",
+            "sources": [
+              "c5a10a0c"
+            ]
+          },
+          {
+            "id": "d6b20d15",
+            "name": "Fake for opening repos",
+            "kind": "fake",
+            "sources": []
+          }
+        ]
+      },
+      {
+        "id": "d6b20c08",
+        "name": "For exporting the glossary",
+        "description": "Opens the project's glossary and writes it back with the sketch's new terms",
+        "side": "driven",
+        "isUser": false,
+        "adapters": [
+          {
+            "id": "d6b20d16",
+            "name": "Browser Files",
+            "technology": "File System Access API, download fallback",
+            "description": "The project's glossary, motif/glossary.md, which Export glossary adds the sketch's terms to",
+            "kind": "real",
+            "seam": "Glossary Files",
+            "sources": [
+              "c5a10a0b"
+            ]
           }
         ]
       }

@@ -230,7 +230,7 @@ public class SourceSpecs
 
         f.Queries.Problem.Should().NotBe(Problem.None);
         f.Queries.Source!.Kind.Should().Be(SourceKind.Example);
-        f.Queries.Review!.Terms.Should().HaveCount(37);
+        f.Queries.Review!.Terms.Should().HaveCount(48);
     }
 
     [Theory]

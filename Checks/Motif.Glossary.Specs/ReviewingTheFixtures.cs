@@ -108,7 +108,7 @@ public class ReviewingTheFixtures
         f.Tasks.OpenExample();
 
         f.Queries.Source.Should().Be(new Source(SourceKind.Example, "Motif Sketch's glossary", "sketch.motifsketch.json"));
-        f.Queries.Review!.Terms.Should().HaveCount(37);
+        f.Queries.Review!.Terms.Should().HaveCount(48);
         f.Queries.Review.SketchFile!.Title.Should().Be("Motif Sketch");
         f.Queries.RepoLinkFragment.Should().BeNull();
     }
@@ -116,7 +116,23 @@ public class ReviewingTheFixtures
     [Fact]
     public void A_term_with_two_kinds_is_in_both_groups_with_both_sketch_ids_resolved()
     {
-        var review = TheExample();
+        // The Example's terms each have one kind now that its ports are named "For …", so this one
+        // names the Clipboard external system and the For copying port, as it did before.
+        var f = new Fixture();
+        f.LocalFiles.WillPick(
+            Fixture.GlossaryFile("""
+                # Glossary
+
+                ## Clipboard
+
+                Where Copy link puts a snapshot link, ready to paste.
+
+                - **Kind:** external system, port
+                - **Sketch:** `c5a10a0a`, `d6b20c06`
+                """),
+            Fixture.SketchFileFile(Example.SketchFile()));
+        f.Tasks.OpenFiles().GetAwaiter().GetResult();
+        var review = f.Queries.Review!;
         var clipboard = Fixture.Term(review, "Clipboard");
 
         clipboard.Term.Kinds.Should().Equal(Kind.ExternalSystem, Kind.Port);
