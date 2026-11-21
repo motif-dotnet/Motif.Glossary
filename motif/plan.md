@@ -33,7 +33,7 @@ Motif.Glossary.sln
 | `Motif.Glossary.App` | `Motif.Glossary.App/` | `blazorwasm` | `Motif.Glossary.App` | The app: runnable adapter on the User port |
 | `Motif.Glossary.Domain` | `Motif.Glossary/Motif.Glossary.Domain/` | `classlib` | `Motif.Glossary` | Domain-specific business rules |
 | `Motif.Glossary.UseCases` | `Motif.Glossary/Motif.Glossary.UseCases/` | `classlib` | `Motif.Glossary` | Application rules (use cases) and all port interfaces |
-| `Motif.Glossary.ForOpeningRepos` | `Adapters/Motif.Glossary.ForOpeningRepos/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the For opening repos port |
+| `Motif.Glossary.ForOpeningRepos` | `Adapters/Motif.Glossary.ForOpeningRepos/` | `classlib` | `Motif.Glossary.Adapters` | Adapters on the For opening repos port |
 | `Motif.Glossary.ForOpeningFiles` | `Adapters/Motif.Glossary.ForOpeningFiles/` | `razorclasslib` | `Motif.Glossary.Adapters` | Adapters on the For opening files port |
 | `Motif.Glossary.Fakes` | `Checks/Motif.Glossary.Fakes/` | `classlib` | `Motif.Glossary.Fakes` | Fake driven adapters, for specs |
 | `Motif.Glossary.Specs` | `Checks/Motif.Glossary.Specs/` | `xunit` | `Motif.Glossary.Specs` | Specs: the checks on every driving port |
@@ -204,7 +204,7 @@ Adapter notes:
 - `Motif.Glossary.Fakes` (`Checks/Motif.Glossary.Fakes/`): every fake Fitting, and every fake of a port whose adapters are their own Fittings, with a folder per port (`ForOpeningRepos/`, `ForOpeningFiles/`). The namespace is flat: `Motif.Glossary.Fakes`.
 - `Motif.Glossary.Specs` (`Checks/Motif.Glossary.Specs/`): xUnit. Packages: `Microsoft.NET.Test.Sdk`, `xunit`, `xunit.runner.visualstudio`, `coverlet.collector`, `AwesomeAssertions`. Keep the template's packages and add `AwesomeAssertions`.
   Add one placeholder spec class with a single passing `[Fact]`, so `dotnet test` runs. Specs wire the real adapters over their fake Fittings, and the other fakes, up by hand; there is no composition root yet.
-- The browser adapters (`Motif.Glossary.ForOpeningRepos`, `Motif.Glossary.ForOpeningFiles`) also take `Microsoft.JSInterop`: each reaches the browser through a small JS module it ships as a static web asset.
+- The browser adapters (`Motif.Glossary.ForOpeningFiles`) also take `Microsoft.JSInterop`: each reaches the browser through a small JS module it ships as a static web asset.
 - Use the latest stable package versions. Use AwesomeAssertions (`.Should()` style) in specs.
 
 ## 8. Not placed

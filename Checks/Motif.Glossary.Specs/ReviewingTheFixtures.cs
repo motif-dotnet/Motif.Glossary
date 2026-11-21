@@ -114,7 +114,7 @@ public class ReviewingTheFixtures
     }
 
     [Fact]
-    public void A_term_with_two_kinds_is_in_both_groups_with_both_sketch_ids_resolved()
+    public async Task A_term_with_two_kinds_is_in_both_groups_with_both_sketch_ids_resolved()
     {
         // The Example's terms each have one kind now that its ports are named "For …", so this one
         // names the Clipboard external system and the For copying port, as it did before.
@@ -131,7 +131,7 @@ public class ReviewingTheFixtures
                 - **Sketch:** `c5a10a0a`, `d6b20c06`
                 """),
             Fixture.SketchFileFile(Example.SketchFile()));
-        f.Tasks.OpenFiles().GetAwaiter().GetResult();
+        await f.Tasks.OpenFiles();
         var review = f.Queries.Review!;
         var clipboard = Fixture.Term(review, "Clipboard");
 
