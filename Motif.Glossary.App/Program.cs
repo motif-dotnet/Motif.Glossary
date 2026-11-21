@@ -10,14 +10,17 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddSingleton(_ => new ForOpeningReposViaGitHub(new HttpClientHandler()));
-builder.Services.AddSingleton<ForOpeningFilesViaPickerAndDrop>();
-builder.Services.AddSingleton(sp => new MotifGlossaryApplication(
-    sp.GetRequiredService<ForOpeningReposViaGitHub>(),
-    sp.GetRequiredService<ForOpeningFilesViaPickerAndDrop>()));
+// Each adapter is built over its Seam's real Fitting.
+builder.Services.AddSingleton<ForOpeningRepos>(_ =>
+    new ForOpeningReposViaGitHub(new HttpClientHandler()));
+builder.Services.AddSingleton<JsInteropLocalFiles>();
+builder.Services.AddSingleton<LocalFiles>(sp =>
+    sp.GetRequiredService<JsInteropLocalFiles>());
+builder.Services.AddSingleton<ForOpeningFiles, ForOpeningFilesViaPickerAndDrop>();
+builder.Services.AddSingleton<MotifGlossaryApplication>();
 builder.Services.AddSingleton<Browser>();
 builder.Services.AddSingleton<Toaster>();
 
 var host = builder.Build();
-await host.Services.GetRequiredService<ForOpeningFilesViaPickerAndDrop>().Start();
+await host.Services.GetRequiredService<JsInteropLocalFiles>().Listen();
 await host.RunAsync();

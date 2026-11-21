@@ -1,31 +1,23 @@
-using Microsoft.JSInterop;
-
 namespace Motif.Glossary.Adapters;
 
 /// <summary>
-/// Files through the browser's file picker, and drag and drop onto the page (wwwroot/files.js).
-/// The module catches drops itself, before the page's own handler runs, and keeps their text for
-/// <see cref="TakeDropped"/>; so call <see cref="Start"/> once at startup.
+/// Files picked with the file picker, or dropped onto the page, over the
+/// <see cref="LocalFiles"/> Seam.
 /// </summary>
-public sealed class ForOpeningFilesViaPickerAndDrop(IJSRuntime js) : ForOpeningFiles, IAsyncDisposable
+public sealed class ForOpeningFilesViaPickerAndDrop(LocalFiles local)
+    : ForOpeningFiles
 {
-    private readonly Lazy<Task<IJSObjectReference>> module =
-        new(() => js.InvokeAsync<IJSObjectReference>("import", "./_content/Motif.Glossary.ForOpeningFiles/files.js").AsTask());
+    private int taken;
 
-    /// <summary>Starts listening for drops onto the page.</summary>
-    public async Task Start() => await (await module.Value).InvokeVoidAsync("listen");
+    public Task<IReadOnlyList<LocalFile>> Pick() => local.Pick();
 
-    public async Task<IReadOnlyList<LocalFile>> Pick() =>
-        ToFiles(await (await module.Value).InvokeAsync<string[][]>("pick"));
-
-    public async Task<IReadOnlyList<LocalFile>> TakeDropped() =>
-        ToFiles(await (await module.Value).InvokeAsync<string[][]>("takeDropped"));
-
-    private static List<LocalFile> ToFiles(string[][]? files) =>
-        files?.Where(f => f.Length == 2).Select(f => new LocalFile(f[0], f[1])).ToList() ?? [];
-
-    public async ValueTask DisposeAsync()
+    public async Task<IReadOnlyList<LocalFile>> TakeDropped()
     {
-        if (module.IsValueCreated) await (await module.Value).DisposeAsync();
+        var drop = await local.LatestDrop();
+        // The page hears of every drop, files or not, so a drop of text
+        // would otherwise open the files dropped before it again.
+        if (drop.Number == taken) return [];
+        taken = drop.Number;
+        return drop.Files;
     }
 }

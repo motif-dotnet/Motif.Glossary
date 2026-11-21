@@ -6,7 +6,7 @@ public class ReviewingTheFixtures
     private static Review Own()
     {
         var f = new Fixture();
-        f.Files.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
         f.Tasks.OpenFiles().GetAwaiter().GetResult();
         return f.Queries.Review!;
     }

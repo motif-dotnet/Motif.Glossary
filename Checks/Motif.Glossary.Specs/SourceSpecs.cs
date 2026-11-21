@@ -7,7 +7,7 @@ public class SourceSpecs
     public async Task Opening_a_glossary_and_its_sketch_file()
     {
         var f = new Fixture();
-        f.Files.WillPick(Fixture.SketchFileFile(), Fixture.GlossaryFile());
+        f.LocalFiles.WillPick(Fixture.SketchFileFile(), Fixture.GlossaryFile());
 
         await f.Tasks.OpenFiles();
 
@@ -31,7 +31,7 @@ public class SourceSpecs
     public async Task Dropping_a_glossary()
     {
         var f = new Fixture();
-        f.Files.Drop(Fixture.GlossaryFile());
+        f.LocalFiles.Drop(Fixture.GlossaryFile());
 
         await f.Tasks.OpenDroppedFiles();
 
@@ -40,11 +40,25 @@ public class SourceSpecs
     }
 
     [Fact]
+    public async Task Dropping_something_that_isnt_files_opens_nothing()
+    {
+        var f = new Fixture();
+        f.LocalFiles.Drop(Fixture.GlossaryFile());
+        await f.Tasks.OpenDroppedFiles();
+        f.Tasks.OpenExample();
+
+        // The page hears of a drop of text too, but it isn't a drop of files.
+        await f.Tasks.OpenDroppedFiles();
+
+        f.Queries.Source!.Kind.Should().Be(SourceKind.Example);
+    }
+
+    [Fact]
     public async Task A_sketch_file_dropped_on_its_own_joins_the_open_glossary()
     {
         var f = new Fixture();
         f.Tasks.Paste(Fixture.OwnGlossary);
-        f.Files.Drop(Fixture.SketchFileFile());
+        f.LocalFiles.Drop(Fixture.SketchFileFile());
 
         await f.Tasks.OpenDroppedFiles();
 
@@ -57,7 +71,7 @@ public class SourceSpecs
     public async Task Dropping_files_with_no_glossary_says_so()
     {
         var f = new Fixture();
-        f.Files.Drop(new LocalFile("picture.png", ""));
+        f.LocalFiles.Drop(new LocalFile("picture.png", ""));
 
         await f.Tasks.OpenDroppedFiles();
 
@@ -69,7 +83,7 @@ public class SourceSpecs
     public async Task Picking_files_with_no_glossary_says_so()
     {
         var f = new Fixture();
-        f.Files.WillPick(new LocalFile("picture.png", ""));
+        f.LocalFiles.WillPick(new LocalFile("picture.png", ""));
 
         await f.Tasks.OpenFiles();
 
@@ -81,7 +95,7 @@ public class SourceSpecs
     public async Task A_sketch_file_on_its_own_needs_a_glossary_open_first()
     {
         var f = new Fixture();
-        f.Files.Drop(Fixture.SketchFileFile());
+        f.LocalFiles.Drop(Fixture.SketchFileFile());
 
         await f.Tasks.OpenDroppedFiles();
 
@@ -94,11 +108,11 @@ public class SourceSpecs
     {
         var f = new Fixture();
 
-        f.Files.WillPick(new LocalFile("README.md", "# Readme\n\nNot a glossary."), Fixture.GlossaryFile());
+        f.LocalFiles.WillPick(new LocalFile("README.md", "# Readme\n\nNot a glossary."), Fixture.GlossaryFile());
         await f.Tasks.OpenFiles();
         f.Queries.Source.Should().Be(new Source(SourceKind.Files, "glossary.md"));
 
-        f.Files.WillPick(new LocalFile("terms.md", Fixture.OwnGlossary));
+        f.LocalFiles.WillPick(new LocalFile("terms.md", Fixture.OwnGlossary));
         await f.Tasks.OpenFiles();
         f.Queries.Source.Should().Be(new Source(SourceKind.Files, "terms.md"));
         f.Queries.Review!.Terms.Should().HaveCount(22);
@@ -243,7 +257,7 @@ public class SourceSpecs
             case "the Example": f.Tasks.OpenExample(); break;
             case "a paste": f.Tasks.Paste(Fixture.OwnGlossary); break;
             case "an empty paste": f.Tasks.Paste("  "); break;
-            case "files": f.Files.WillPick(Fixture.GlossaryFile()); overtaking = f.Tasks.OpenFiles(); break;
+            case "files": f.LocalFiles.WillPick(Fixture.GlossaryFile()); overtaking = f.Tasks.OpenFiles(); break;
             case "a name that isn't a repo": overtaking = f.Tasks.OpenRepo("not a repo"); break;
             case "another repo": overtaking = f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch"); break;
         }
@@ -272,7 +286,7 @@ public class SourceSpecs
     {
         var f = new Fixture();
         f.Tasks.Paste("## Alpha\n\n- **Kind:** actor\n");
-        f.Files.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
 
         await f.Tasks.OpenFiles();
 
@@ -285,11 +299,11 @@ public class SourceSpecs
     {
         var f = new Fixture();
 
-        f.Files.WillPick(new LocalFile("package.json", "{}"), Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(new LocalFile("package.json", "{}"), Fixture.GlossaryFile(), Fixture.SketchFileFile());
         await f.Tasks.OpenFiles();
         f.Queries.Source!.SketchFileName.Should().Be("sketch.motifsketch.json");
 
-        f.Files.WillPick(Fixture.GlossaryFile(), new LocalFile("design.json", Fixture.OwnSketchFile));
+        f.LocalFiles.WillPick(Fixture.GlossaryFile(), new LocalFile("design.json", Fixture.OwnSketchFile));
         await f.Tasks.OpenFiles();
         f.Queries.Source!.SketchFileName.Should().Be("design.json");
         f.Queries.Review!.SketchFile.Should().NotBeNull();

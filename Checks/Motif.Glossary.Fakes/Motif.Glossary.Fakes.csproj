@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Motif.Glossary\Motif.Glossary.UseCases\Motif.Glossary.UseCases.csproj" />
+    <ProjectReference Include="..\..\Adapters\Motif.Glossary.ForOpeningFiles\Motif.Glossary.ForOpeningFiles.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

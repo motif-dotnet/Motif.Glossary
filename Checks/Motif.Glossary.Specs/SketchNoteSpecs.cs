@@ -41,7 +41,7 @@ public class SketchNoteSpecs
     private static Review Open(string glossary, string? sketch)
     {
         var f = new Fixture();
-        f.Files.WillPick(sketch is null ? [Fixture.GlossaryFile(glossary)] : [Fixture.GlossaryFile(glossary), Fixture.SketchFileFile(sketch)]);
+        f.LocalFiles.WillPick(sketch is null ? [Fixture.GlossaryFile(glossary)] : [Fixture.GlossaryFile(glossary), Fixture.SketchFileFile(sketch)]);
         // The fakes answer at once, so this never blocks.
         f.Tasks.OpenFiles().Wait();
         return f.Queries.Review!;
@@ -88,7 +88,7 @@ public class SketchNoteSpecs
     public async Task A_sketch_file_that_cant_be_read_leaves_the_glossary_reviewed_without_it()
     {
         var f = new Fixture();
-        f.Files.WillPick(Fixture.GlossaryFile(Glossary), Fixture.SketchFileFile("{ not json"));
+        f.LocalFiles.WillPick(Fixture.GlossaryFile(Glossary), Fixture.SketchFileFile("{ not json"));
         await f.Tasks.OpenFiles();
 
         f.Queries.Review!.Terms.Should().HaveCount(3);

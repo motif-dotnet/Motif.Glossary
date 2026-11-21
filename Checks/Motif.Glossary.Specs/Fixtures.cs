@@ -7,11 +7,12 @@ namespace Motif.Glossary.Specs;
 public sealed class Fixture
 {
     public FakeGitHub GitHub { get; } = new();
-    public FakeFiles Files { get; } = new();
+    public FakeLocalFiles LocalFiles { get; } = new();
     public MotifGlossaryApplication App { get; }
 
     public Fixture() => App = new MotifGlossaryApplication(
-        new ForOpeningReposViaGitHub(GitHub), Files);
+        new ForOpeningReposViaGitHub(GitHub),
+        new ForOpeningFilesViaPickerAndDrop(LocalFiles));
 
     public UserTasks Tasks => App;
     public UserQueries Queries => App;
