@@ -1,33 +1,44 @@
 namespace Motif.Glossary;
 
-/// <summary>The application: reads a glossary from one of the four sources and keeps its review.</summary>
-public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFiles files) : ForDoing, ForSeeing
+/// <summary>
+/// The application: reads a glossary from one of the four sources and keeps
+/// its review.
+/// </summary>
+public sealed class MotifGlossaryApplication(
+    ForOpeningRepos repos, ForOpeningFiles files) : ForDoing, ForSeeing
 {
+    // Counts what the Reviewer has tried, so a repo read that something newer
+    // has overtaken is dropped when it comes back.
     private int attempt;
 
     public Review? Review { get; private set; }
     public Source? Source { get; private set; }
     public bool ProposedOnly { get; private set; }
-    public IReadOnlyList<KindGroup> Groups => Review?.GroupsFor(ProposedOnly) ?? [];
+    public IReadOnlyList<KindGroup> Groups =>
+        Review?.GroupsFor(ProposedOnly) ?? [];
     public Problem Problem { get; private set; } = Problem.None;
     public Problem SketchFileProblem { get; private set; } = Problem.None;
     public bool Loading { get; private set; }
 
     public string? RepoLinkFragment =>
-        Source is { Kind: SourceKind.Repo, Repo: { } repo } ? RepoLink.Fragment(repo) : null;
+        Source is { Kind: SourceKind.Repo, Repo: { } repo }
+            ? RepoLink.Fragment(repo)
+            : null;
 
     public void OpenExample()
     {
-        attempt++;
-        Show(new Source(SourceKind.Example, Example.Name, "sketch.motifsketch.json"), Example.Glossary(), Example.SketchFile());
+        Overtake();
+        Show(
+            new Source(SourceKind.Example, Example.Name, SketchFile.FileName),
+            Example.Glossary(),
+            Example.SketchFile());
     }
 
     public void Paste(string markdown)
     {
-        attempt++;
+        Overtake();
         if (string.IsNullOrWhiteSpace(markdown))
         {
-            Loading = false;
             Problem = Unreviewable(
                 "There's nothing to review: paste a glossary's Markdown first.");
             return;
@@ -35,44 +46,57 @@ public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFi
         Show(new Source(SourceKind.Pasted, "Pasted Markdown"), markdown, null);
     }
 
-    public async Task OpenFiles() => OpenLocal(await files.Pick(), dropped: false);
+    public async Task OpenFiles() =>
+        OpenLocal(await files.Pick(), dropped: false);
 
-    public async Task OpenDroppedFiles() => OpenLocal(await files.TakeDropped(), dropped: true);
+    public async Task OpenDroppedFiles() =>
+        OpenLocal(await files.TakeDropped(), dropped: true);
 
     private void OpenLocal(IReadOnlyList<LocalFile> picked, bool dropped)
     {
         if (picked.Count == 0) return;
-        attempt++;
-        var glossary = picked.FirstOrDefault(f => f.Name.Equals("glossary.md", StringComparison.OrdinalIgnoreCase))
-            ?? picked.FirstOrDefault(f => HasExtension(f, ".md", ".markdown", ".txt"));
-        var sketch = picked.FirstOrDefault(f => f.Name.EndsWith(".motifsketch.json", StringComparison.OrdinalIgnoreCase))
-            ?? picked.FirstOrDefault(f => HasExtension(f, ".json"));
+        Overtake();
+        var glossary = picked.FirstOrDefault(f => f.Name.Equals(
+                Glossary.FileName, StringComparison.OrdinalIgnoreCase))
+            ?? picked.FirstOrDefault(f => EndsWith(f, ".md", ".markdown", ".txt"));
+        var sketch = picked.FirstOrDefault(f => EndsWith(f, ".motifsketch.json"))
+            ?? picked.FirstOrDefault(f => EndsWith(f, ".json"));
 
-        if (glossary is null && sketch is not null && Review is not null && Source is not null)
+        if (glossary is null && sketch is not null
+            && Review is not null && Source is not null)
         {
             // A sketch file on its own joins the glossary that's already open.
-            Show(Source with { SketchFileName = sketch.Name }, null, sketch.Text, Review.Glossary);
+            Show(
+                Source with { SketchFileName = sketch.Name },
+                Review.Glossary,
+                sketch.Text);
             return;
         }
         if (glossary is null)
         {
+            var verb = dropped ? "Drop" : "Pick";
+            var why = sketch is not null
+                ? "A sketch file on its own needs a glossary open first."
+                : "None of those was a Markdown file.";
             Problem = Unreviewable(
-                $"{(dropped ? "Drop" : "Pick")} a glossary.md, and its sketch file too if you like. "
-                + (sketch is not null ? "A sketch file on its own needs a glossary open first." : "None of those was a Markdown file."));
+                $"{verb} a glossary.md, and its sketch file too if you like. "
+                + why);
             return;
         }
-        Show(new Source(SourceKind.Files, glossary.Name, sketch?.Name), glossary.Text, sketch?.Text);
+        Show(
+            new Source(SourceKind.Files, glossary.Name, sketch?.Name),
+            glossary.Text,
+            sketch?.Text);
     }
 
     public async Task OpenRepo(string repo)
     {
         if (!RepoName.TryParse(repo, out var name))
         {
-            // A repo still being read is dropped, so it's no longer loading.
-            attempt++;
-            Loading = false;
+            Overtake();
             Problem = Unreviewable(
-                $"“{repo.Trim()}” isn't a GitHub repo. Give it as owner/name, such as motif-dotnet/Motif.Sketch.");
+                $"“{repo.Trim()}” isn't a GitHub repo. Give it as owner/name, "
+                + "such as motif-dotnet/Motif.Sketch.");
             return;
         }
         await Open(name);
@@ -87,7 +111,7 @@ public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFi
 
     private async Task Open(RepoName repo)
     {
-        var mine = ++attempt;
+        var mine = Overtake();
         Loading = true;
         Problem = Problem.None;
         try
@@ -97,16 +121,24 @@ public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFi
             if (read.Glossary is null)
             {
                 Problem = Unreviewable(
-                    $"{repo} has no motif/glossary.md on its default branch, or it isn't a public repo.");
+                    $"{repo} has no motif/glossary.md on its default branch, "
+                    + "or it isn't a public repo.");
                 return;
             }
-            Show(new Source(SourceKind.Repo, repo.ToString(), read.SketchFile is null ? null : "sketch.motifsketch.json", repo),
-                read.Glossary, read.SketchFile);
+            var sketchFileName =
+                read.SketchFile is null ? null : SketchFile.FileName;
+            Show(
+                new Source(SourceKind.Repo, repo.ToString(), sketchFileName, repo),
+                read.Glossary,
+                read.SketchFile);
         }
         catch (HttpRequestException e)
         {
             if (mine == attempt)
-                Problem = Unreviewable($"GitHub couldn't be reached for {repo} ({e.Message}).");
+            {
+                Problem = Unreviewable(
+                    $"GitHub couldn't be reached for {repo} ({e.Message}).");
+            }
         }
         finally
         {
@@ -114,27 +146,42 @@ public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFi
         }
     }
 
-    public void ShowProposedOnly(bool proposedOnly) => ProposedOnly = proposedOnly;
+    public void ShowProposedOnly(bool proposedOnly) =>
+        ProposedOnly = proposedOnly;
 
     public void DismissProblem() => Problem = Problem.None;
 
-    private void Show(Source source, string? markdown, string? sketchJson, Glossary? glossary = null)
+    /// <summary>
+    /// Starts something new the Reviewer tried, so a repo still being read is
+    /// dropped and no longer loading. Returns the new attempt.
+    /// </summary>
+    private int Overtake()
     {
-        glossary ??= GlossaryReader.Read(markdown ?? "");
         Loading = false;
+        return ++attempt;
+    }
+
+    private void Show(Source source, string markdown, string? sketchJson) =>
+        Show(source, GlossaryReader.Read(markdown), sketchJson);
+
+    private void Show(Source source, Glossary glossary, string? sketchJson)
+    {
         if (glossary.Terms.Count == 0)
         {
             Problem = Unreviewable(
-                $"No terms in {source.Name}. A glossary has one ## heading per term.");
+                $"No terms in {source.Name}. "
+                + "A glossary has one ## heading per term.");
             return;
         }
 
         SketchFile? sketch = null;
         var sketchProblem = Problem.None;
-        if (sketchJson is not null && !SketchFileReader.TryRead(sketchJson, out sketch, out var why))
+        if (sketchJson is not null
+            && !SketchFileReader.TryRead(sketchJson, out sketch, out var why))
         {
             sketchProblem = new Problem(
-                "The sketch file couldn't be read", $"Sketch ids are shown as they are. {why}");
+                "The sketch file couldn't be read",
+                $"Sketch ids are shown as they are. {why}");
             source = source with { SketchFileName = null };
         }
 
@@ -147,6 +194,7 @@ public sealed class MotifGlossaryApplication(ForOpeningRepos repos, ForOpeningFi
     private static Problem Unreviewable(string text) =>
         new("That glossary can't be reviewed", text);
 
-    private static bool HasExtension(LocalFile file, params string[] extensions) =>
-        extensions.Any(e => file.Name.EndsWith(e, StringComparison.OrdinalIgnoreCase));
+    private static bool EndsWith(LocalFile file, params string[] endings) =>
+        endings.Any(end =>
+            file.Name.EndsWith(end, StringComparison.OrdinalIgnoreCase));
 }

@@ -11,12 +11,15 @@ public enum SpanKind
     Link,
 }
 
-/// <summary>A run of inline Markdown: plain text, a code span, bold, italic or a link.</summary>
+/// <summary>
+/// A run of inline Markdown: plain text, a code span, bold, italic or a link.
+/// </summary>
 public sealed record InlineSpan(SpanKind Kind, string Text, string? Href = null);
 
 /// <summary>
-/// The little inline Markdown a glossary uses: `code`, **bold**, *italic* and [links](#anchor).
-/// Nesting is flattened: bold inside a link is shown as the link's plain text.
+/// The little inline Markdown a glossary uses: `code`, **bold**, *italic* and
+/// [links](#anchor). Nesting is flattened: bold inside a link is shown as the
+/// link's plain text.
 /// </summary>
 public static class Inline
 {
@@ -36,7 +39,8 @@ public static class Inline
         while (i < markdown.Length)
         {
             var c = markdown[i];
-            if (c == '\\' && i + 1 < markdown.Length && IsEscapable(markdown[i + 1]))
+            if (c == '\\' && i + 1 < markdown.Length
+                && IsEscapable(markdown[i + 1]))
             {
                 text.Append(markdown[i + 1]);
                 i += 2;
@@ -45,16 +49,19 @@ public static class Inline
             if (c == '`')
             {
                 var ticks = Run(markdown, i, '`');
-                var close = markdown.IndexOf(new string('`', ticks), i + ticks, StringComparison.Ordinal);
+                var close = markdown.IndexOf(
+                    new string('`', ticks), i + ticks, StringComparison.Ordinal);
                 if (close > 0)
                 {
                     Flush();
-                    spans.Add(new InlineSpan(SpanKind.Code, markdown[(i + ticks)..close].Trim()));
+                    var code = markdown[(i + ticks)..close].Trim();
+                    spans.Add(new InlineSpan(SpanKind.Code, code));
                     i = close + ticks;
                     continue;
                 }
             }
-            if (c == '[' && TryLink(markdown, i, out var linkText, out var href, out var end))
+            if (c == '['
+                && TryLink(markdown, i, out var linkText, out var href, out var end))
             {
                 Flush();
                 spans.Add(new InlineSpan(SpanKind.Link, PlainText(linkText), href));
@@ -65,11 +72,14 @@ public static class Inline
             {
                 var stars = Math.Min(Run(markdown, i, '*'), 2);
                 var marker = new string('*', stars);
-                var close = markdown.IndexOf(marker, i + stars, StringComparison.Ordinal);
+                var close = markdown.IndexOf(
+                    marker, i + stars, StringComparison.Ordinal);
                 if (close > i + stars && !char.IsWhiteSpace(markdown[i + stars]))
                 {
                     Flush();
-                    spans.Add(new InlineSpan(stars == 2 ? SpanKind.Strong : SpanKind.Emphasis, PlainText(markdown[(i + stars)..close])));
+                    var kind = stars == 2 ? SpanKind.Strong : SpanKind.Emphasis;
+                    var inner = markdown[(i + stars)..close];
+                    spans.Add(new InlineSpan(kind, PlainText(inner)));
                     i = close + stars;
                     continue;
                 }
@@ -81,39 +91,55 @@ public static class Inline
         return spans;
     }
 
-    /// <summary>The text with its Markdown markers taken out.</summary>
+    /// <summary>
+    /// The text with its Markdown markers taken out.
+    /// </summary>
     public static string PlainText(string markdown)
     {
         if (markdown.IndexOfAny(['`', '*', '[', '\\']) < 0) return markdown;
         return string.Concat(Parse(markdown).Select(s => s.Text));
     }
 
-    private static bool TryLink(string s, int start, out string text, out string href, out int end)
+    private static bool TryLink(
+        string markdown, int start,
+        out string text, out string href, out int end)
     {
         text = href = "";
         end = start;
         var depth = 0;
         var closeBracket = -1;
-        for (var j = start; j < s.Length; j++)
+        for (var j = start; j < markdown.Length; j++)
         {
-            if (s[j] == '[') depth++;
-            else if (s[j] == ']' && --depth == 0) { closeBracket = j; break; }
+            if (markdown[j] == '[') depth++;
+            else if (markdown[j] == ']' && --depth == 0)
+            {
+                closeBracket = j;
+                break;
+            }
         }
-        if (closeBracket < 0 || closeBracket + 1 >= s.Length || s[closeBracket + 1] != '(') return false;
-        var closeParen = s.IndexOf(')', closeBracket + 2);
+        if (closeBracket < 0 || closeBracket + 1 >= markdown.Length
+            || markdown[closeBracket + 1] != '(')
+        {
+            return false;
+        }
+        var closeParen = markdown.IndexOf(')', closeBracket + 2);
         if (closeParen < 0) return false;
-        text = s[(start + 1)..closeBracket];
-        href = s[(closeBracket + 2)..closeParen].Trim();
+        text = markdown[(start + 1)..closeBracket];
+        href = markdown[(closeBracket + 2)..closeParen].Trim();
         end = closeParen + 1;
         return true;
     }
 
-    private static int Run(string s, int start, char c)
+    /// <summary>
+    /// How many of the character there are in a row from the start.
+    /// </summary>
+    private static int Run(string markdown, int start, char c)
     {
         var n = 0;
-        while (start + n < s.Length && s[start + n] == c) n++;
+        while (start + n < markdown.Length && markdown[start + n] == c) n++;
         return n;
     }
 
-    private static bool IsEscapable(char c) => c is '\\' or '`' or '*' or '_' or '[' or ']' or '(' or ')' or '#' or '-';
+    private static bool IsEscapable(char c) =>
+        c is '\\' or '`' or '*' or '_' or '[' or ']' or '(' or ')' or '#' or '-';
 }

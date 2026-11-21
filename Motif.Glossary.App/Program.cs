@@ -16,7 +16,8 @@ builder.Services.AddSingleton<ForOpeningRepos>(_ =>
 builder.Services.AddSingleton<JsInteropLocalFiles>();
 builder.Services.AddSingleton<LocalFiles>(sp =>
     sp.GetRequiredService<JsInteropLocalFiles>());
-builder.Services.AddSingleton<ForOpeningFiles, ForOpeningFilesViaPickerAndDrop>();
+builder.Services.AddSingleton<
+    ForOpeningFiles, ForOpeningFilesViaPickerAndDrop>();
 builder.Services.AddSingleton<MotifGlossaryApplication>();
 builder.Services.AddSingleton<Browser>();
 builder.Services.AddSingleton<Toaster>();

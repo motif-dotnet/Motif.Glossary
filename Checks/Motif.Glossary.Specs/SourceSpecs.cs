@@ -1,17 +1,31 @@
+using System.Net;
+
 namespace Motif.Glossary.Specs;
 
-/// <summary>The four ways in: files opened or dropped, pasted Markdown, a public repo, and the Example (decision 5).</summary>
+/// <summary>
+/// The four ways in: files opened or dropped, pasted Markdown, a public repo,
+/// and the Example (decision 5).
+/// </summary>
 public class SourceSpecs
 {
+    private const string GlossaryUrl =
+        "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/"
+        + "motif/glossary.md";
+
+    private const string SketchFileUrl =
+        "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/"
+        + "motif/sketch.motifsketch.json";
+
     [Fact]
     public async Task Opening_a_glossary_and_its_sketch_file()
     {
         var f = new Fixture();
-        f.LocalFiles.WillPick(Fixture.SketchFileFile(), Fixture.GlossaryFile());
+        f.LocalFiles.WillPick(Fixture.LocalSketchFile(), Fixture.LocalGlossary());
 
         await f.Tasks.OpenFiles();
 
-        f.Queries.Source.Should().Be(new Source(SourceKind.Files, "glossary.md", "sketch.motifsketch.json"));
+        f.Queries.Source.Should().Be(new Source(
+            SourceKind.Files, "glossary.md", "sketch.motifsketch.json"));
         f.Queries.Review!.SketchFile.Should().NotBeNull();
     }
 
@@ -31,7 +45,7 @@ public class SourceSpecs
     public async Task Dropping_a_glossary()
     {
         var f = new Fixture();
-        f.LocalFiles.Drop(Fixture.GlossaryFile());
+        f.LocalFiles.Drop(Fixture.LocalGlossary());
 
         await f.Tasks.OpenDroppedFiles();
 
@@ -43,7 +57,7 @@ public class SourceSpecs
     public async Task Dropping_something_that_isnt_files_opens_nothing()
     {
         var f = new Fixture();
-        f.LocalFiles.Drop(Fixture.GlossaryFile());
+        f.LocalFiles.Drop(Fixture.LocalGlossary());
         await f.Tasks.OpenDroppedFiles();
         f.Tasks.OpenExample();
 
@@ -58,13 +72,15 @@ public class SourceSpecs
     {
         var f = new Fixture();
         f.Tasks.Paste(Fixture.OwnGlossary);
-        f.LocalFiles.Drop(Fixture.SketchFileFile());
+        f.LocalFiles.Drop(Fixture.LocalSketchFile());
 
         await f.Tasks.OpenDroppedFiles();
 
-        f.Queries.Source.Should().Be(new Source(SourceKind.Pasted, "Pasted Markdown", "sketch.motifsketch.json"));
+        f.Queries.Source.Should().Be(new Source(
+            SourceKind.Pasted, "Pasted Markdown", "sketch.motifsketch.json"));
         f.Queries.Problem.Should().Be(Problem.None);
-        Fixture.Term(f.Queries.Review!, "Reviewer").Sketch.Single().Item!.Name.Should().Be("Reviewer");
+        Fixture.Term(f.Queries.Review!, "Reviewer").Sketch.Single().Item!.Name
+            .Should().Be("Reviewer");
     }
 
     [Fact]
@@ -88,19 +104,22 @@ public class SourceSpecs
         await f.Tasks.OpenFiles();
 
         f.Queries.Review.Should().BeNull();
-        f.Queries.Problem.Text.Should().StartWith("Pick a glossary.md").And.EndWith("None of those was a Markdown file.");
+        f.Queries.Problem.Text
+            .Should().StartWith("Pick a glossary.md")
+            .And.EndWith("None of those was a Markdown file.");
     }
 
     [Fact]
     public async Task A_sketch_file_on_its_own_needs_a_glossary_open_first()
     {
         var f = new Fixture();
-        f.LocalFiles.Drop(Fixture.SketchFileFile());
+        f.LocalFiles.Drop(Fixture.LocalSketchFile());
 
         await f.Tasks.OpenDroppedFiles();
 
         f.Queries.Review.Should().BeNull();
-        f.Queries.Problem.Text.Should().EndWith("A sketch file on its own needs a glossary open first.");
+        f.Queries.Problem.Text.Should().EndWith(
+            "A sketch file on its own needs a glossary open first.");
     }
 
     [Fact]
@@ -108,7 +127,9 @@ public class SourceSpecs
     {
         var f = new Fixture();
 
-        f.LocalFiles.WillPick(new LocalFile("README.md", "# Readme\n\nNot a glossary."), Fixture.GlossaryFile());
+        f.LocalFiles.WillPick(
+            new LocalFile("README.md", "# Readme\n\nNot a glossary."),
+            Fixture.LocalGlossary());
         await f.Tasks.OpenFiles();
         f.Queries.Source.Should().Be(new Source(SourceKind.Files, "glossary.md"));
 
@@ -136,10 +157,12 @@ public class SourceSpecs
         f.Tasks.OpenExample();
 
         f.Tasks.Paste("   ");
-        f.Queries.Problem.Text.Should().Contain("nothing to review");
+        f.Queries.Problem.Text.Should().Be(
+            "There's nothing to review: paste a glossary's Markdown first.");
 
         f.Tasks.Paste("# Just a title\n\nNo terms.");
-        f.Queries.Problem.Text.Should().Contain("No terms");
+        f.Queries.Problem.Text.Should().Be(
+            "No terms in Pasted Markdown. A glossary has one ## heading per term.");
         f.Queries.Source!.Kind.Should().Be(SourceKind.Example);
 
         f.Tasks.DismissProblem();
@@ -151,15 +174,18 @@ public class SourceSpecs
     {
         var f = new Fixture();
         f.GitHub
-            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary)
-            .Commit("motif-dotnet/Motif.Glossary", "motif/sketch.motifsketch.json", Fixture.OwnSketchFile);
+            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+                Fixture.OwnGlossary)
+            .Commit("motif-dotnet/Motif.Glossary", "motif/sketch.motifsketch.json",
+                Fixture.OwnSketchFile);
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
         f.Queries.Source!.Name.Should().Be("motif-dotnet/Motif.Glossary");
         f.Queries.Source.SketchFileName.Should().Be("sketch.motifsketch.json");
         f.Queries.Review!.SketchFile.Should().NotBeNull();
-        f.Queries.RepoLinkFragment.Should().Be("repo=motif-dotnet/Motif.Glossary");
+        f.Queries.RepoLinkFragment
+            .Should().Be("repo=motif-dotnet/Motif.Glossary");
         f.Queries.Loading.Should().BeFalse();
     }
 
@@ -170,13 +196,12 @@ public class SourceSpecs
     public async Task A_repo_can_be_given_as_a_GitHub_URL(string given)
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
 
         await f.Tasks.OpenRepo(given);
 
-        f.GitHub.Requests.Should().BeEquivalentTo(
-            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/glossary.md",
-            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/sketch.motifsketch.json");
+        f.GitHub.Requests.Should().BeEquivalentTo(GlossaryUrl, SketchFileUrl);
     }
 
     [Theory]
@@ -193,7 +218,9 @@ public class SourceSpecs
         await f.Tasks.OpenRepo(given);
 
         f.GitHub.Requests.Should().BeEmpty();
-        f.Queries.Problem.Text.Should().Contain("isn't a GitHub repo");
+        f.Queries.Problem.Text.Should().Be(
+            $"“{given}” isn't a GitHub repo. Give it as owner/name, "
+            + "such as motif-dotnet/Motif.Sketch.");
     }
 
     [Fact]
@@ -204,18 +231,25 @@ public class SourceSpecs
         await f.Tasks.OpenRepo("someone/elsewhere");
 
         f.Queries.Review.Should().BeNull();
-        f.Queries.Problem.Text.Should().Be("someone/elsewhere has no motif/glossary.md on its default branch, or it isn't a public repo.");
+        f.Queries.Problem.Text.Should().Be(
+            "someone/elsewhere has no motif/glossary.md on its default branch, "
+            + "or it isn't a public repo.");
     }
 
     [Fact]
     public async Task A_repo_with_no_sketch_file_is_reviewed_without_one()
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
-        f.Queries.Source.Should().Be(new Source(SourceKind.Repo, "motif-dotnet/Motif.Glossary", null, new RepoName("motif-dotnet", "Motif.Glossary")));
+        f.Queries.Source.Should().Be(new Source(
+            SourceKind.Repo,
+            "motif-dotnet/Motif.Glossary",
+            null,
+            new RepoName("motif-dotnet", "Motif.Glossary")));
         f.Queries.Review!.SketchFile.Should().BeNull();
         f.Queries.SketchFileProblem.Should().Be(Problem.None);
     }
@@ -238,14 +272,17 @@ public class SourceSpecs
     [InlineData("a paste")]
     [InlineData("an empty paste")]
     [InlineData("files")]
+    [InlineData("files with no glossary")]
     [InlineData("a name that isn't a repo")]
     [InlineData("another repo")]
     public async Task A_repo_read_overtaken_by_something_else_is_dropped(string overtaker)
     {
         var f = new Fixture();
         f.GitHub
-            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary)
-            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md", Fixture.OwnGlossary)
+            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+                Fixture.OwnGlossary)
+            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md",
+                Fixture.OwnGlossary)
             .Hold();
 
         var reading = f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
@@ -254,17 +291,34 @@ public class SourceSpecs
         var overtaking = Task.CompletedTask;
         switch (overtaker)
         {
-            case "the Example": f.Tasks.OpenExample(); break;
-            case "a paste": f.Tasks.Paste(Fixture.OwnGlossary); break;
-            case "an empty paste": f.Tasks.Paste("  "); break;
-            case "files": f.LocalFiles.WillPick(Fixture.GlossaryFile()); overtaking = f.Tasks.OpenFiles(); break;
-            case "a name that isn't a repo": overtaking = f.Tasks.OpenRepo("not a repo"); break;
-            case "another repo": overtaking = f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch"); break;
+            case "the Example":
+                f.Tasks.OpenExample();
+                break;
+            case "a paste":
+                f.Tasks.Paste(Fixture.OwnGlossary);
+                break;
+            case "an empty paste":
+                f.Tasks.Paste("  ");
+                break;
+            case "files":
+                f.LocalFiles.WillPick(Fixture.LocalGlossary());
+                overtaking = f.Tasks.OpenFiles();
+                break;
+            case "files with no glossary":
+                f.LocalFiles.WillPick(new LocalFile("picture.png", ""));
+                overtaking = f.Tasks.OpenFiles();
+                break;
+            case "a name that isn't a repo":
+                overtaking = f.Tasks.OpenRepo("not a repo");
+                break;
+            case "another repo":
+                overtaking = f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch");
+                break;
         }
         f.GitHub.Release();
         await Task.WhenAll(reading, overtaking);
 
-        f.Queries.Source?.Name.Should().NotBe("motif-dotnet/Motif.Glossary");
+        (f.Queries.Source?.Name).Should().NotBe("motif-dotnet/Motif.Glossary");
         f.Queries.Loading.Should().BeFalse();
     }
 
@@ -282,24 +336,32 @@ public class SourceSpecs
     public async Task Each_source_says_where_its_glossary_came_from()
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
 
         f.Tasks.OpenExample();
-        f.Queries.Source!.About.Should().Be("The Example: Motif Sketch's glossary and sketch file");
+        f.Queries.Source!.About.Should().Be(
+            "The Example: Motif Sketch's glossary and sketch file");
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
-        f.Queries.Source!.About.Should().Be("motif/glossary.md from motif-dotnet/Motif.Glossary's default branch, with no sketch file");
+        f.Queries.Source!.About.Should().Be(
+            "motif/glossary.md from motif-dotnet/Motif.Glossary's default "
+            + "branch, with no sketch file");
 
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/sketch.motifsketch.json", Fixture.OwnSketchFile);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary",
+            "motif/sketch.motifsketch.json", Fixture.OwnSketchFile);
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
-        f.Queries.Source!.About.Should().Be("motif/glossary.md from motif-dotnet/Motif.Glossary's default branch, with its sketch file");
+        f.Queries.Source!.About.Should().Be(
+            "motif/glossary.md from motif-dotnet/Motif.Glossary's default "
+            + "branch, with its sketch file");
 
         f.Tasks.Paste(Fixture.OwnGlossary);
         f.Queries.Source!.About.Should().Be("Pasted Markdown");
 
-        f.LocalFiles.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(Fixture.LocalGlossary(), Fixture.LocalSketchFile());
         await f.Tasks.OpenFiles();
-        f.Queries.Source!.About.Should().Be("glossary.md, with sketch.motifsketch.json");
+        f.Queries.Source!.About.Should().Be(
+            "glossary.md, with sketch.motifsketch.json");
     }
 
     [Fact]
@@ -320,11 +382,12 @@ public class SourceSpecs
     {
         var f = new Fixture();
         f.Tasks.Paste("## Alpha\n\n- **Kind:** actor\n");
-        f.LocalFiles.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(Fixture.LocalGlossary(), Fixture.LocalSketchFile());
 
         await f.Tasks.OpenFiles();
 
-        f.Queries.Source.Should().Be(new Source(SourceKind.Files, "glossary.md", "sketch.motifsketch.json"));
+        f.Queries.Source.Should().Be(new Source(
+            SourceKind.Files, "glossary.md", "sketch.motifsketch.json"));
         f.Queries.Review!.Terms.Should().HaveCount(26);
     }
 
@@ -333,11 +396,16 @@ public class SourceSpecs
     {
         var f = new Fixture();
 
-        f.LocalFiles.WillPick(new LocalFile("package.json", "{}"), Fixture.GlossaryFile(), Fixture.SketchFileFile());
+        f.LocalFiles.WillPick(
+            new LocalFile("package.json", "{}"),
+            Fixture.LocalGlossary(),
+            Fixture.LocalSketchFile());
         await f.Tasks.OpenFiles();
         f.Queries.Source!.SketchFileName.Should().Be("sketch.motifsketch.json");
 
-        f.LocalFiles.WillPick(Fixture.GlossaryFile(), new LocalFile("design.json", Fixture.OwnSketchFile));
+        f.LocalFiles.WillPick(
+            Fixture.LocalGlossary(),
+            new LocalFile("design.json", Fixture.OwnSketchFile));
         await f.Tasks.OpenFiles();
         f.Queries.Source!.SketchFileName.Should().Be("design.json");
         f.Queries.Review!.SketchFile.Should().NotBeNull();
@@ -359,21 +427,27 @@ public class SourceSpecs
     {
         var f = new Fixture();
         f.GitHub
-            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md", Fixture.OwnGlossary)
-            .Down(System.Net.HttpStatusCode.ServiceUnavailable);
+            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md",
+                Fixture.OwnGlossary)
+            .Down(HttpStatusCode.ServiceUnavailable);
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch");
 
-        f.Queries.Problem.Text.Should().StartWith("GitHub couldn't be reached for motif-dotnet/Motif.Sketch").And.Contain("503");
+        f.Queries.Problem.Text
+            .Should().StartWith(
+                "GitHub couldn't be reached for motif-dotnet/Motif.Sketch")
+            .And.Contain("503");
     }
 
     [Fact]
     public async Task A_repo_link_opens_straight_into_the_review()
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
 
-        (await f.Tasks.OpenLink("#repo=motif-dotnet/Motif.Glossary")).Should().BeTrue();
+        (await f.Tasks.OpenLink("#repo=motif-dotnet/Motif.Glossary"))
+            .Should().BeTrue();
 
         f.Queries.Review!.Terms.Should().HaveCount(26);
     }
@@ -382,13 +456,13 @@ public class SourceSpecs
     public async Task A_repo_link_can_be_escaped_and_in_any_case()
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
 
-        (await f.Tasks.OpenLink("#REPO=motif-dotnet%2FMotif.Glossary")).Should().BeTrue();
+        (await f.Tasks.OpenLink("#REPO=motif-dotnet%2FMotif.Glossary"))
+            .Should().BeTrue();
 
-        f.GitHub.Requests.Should().BeEquivalentTo(
-            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/glossary.md",
-            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/sketch.motifsketch.json");
+        f.GitHub.Requests.Should().BeEquivalentTo(GlossaryUrl, SketchFileUrl);
     }
 
     [Theory]
@@ -409,7 +483,8 @@ public class SourceSpecs
     public async Task Only_a_repo_review_has_a_repo_link()
     {
         var f = new Fixture();
-        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md",
+            Fixture.OwnGlossary);
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
         f.Tasks.OpenExample();

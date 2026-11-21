@@ -88,7 +88,6 @@
 @code {
     [Parameter, EditorRequired] public Review Review { get; set; } = null!;
     [Parameter, EditorRequired] public IReadOnlyList<KindGroup> Groups { get; set; } = [];
-    [Parameter] public Source? Source { get; set; }
     [Parameter] public bool ProposedOnly { get; set; }
     [Parameter] public EventCallback<bool> ProposedOnlyChanged { get; set; }
     [Parameter] public string? RepoLink { get; set; }

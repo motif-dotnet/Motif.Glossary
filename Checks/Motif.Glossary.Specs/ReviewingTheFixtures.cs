@@ -1,13 +1,16 @@
 namespace Motif.Glossary.Specs;
 
-/// <summary>The two real glossaries: this repo's own, opened as files, and the Example, which is Motif Sketch's.</summary>
+/// <summary>
+/// The two real glossaries: this repo's own, opened as files, and the
+/// Example, which is Motif Sketch's.
+/// </summary>
 public class ReviewingTheFixtures
 {
-    private static Review Own()
+    private static async Task<Review> Own()
     {
         var f = new Fixture();
-        f.LocalFiles.WillPick(Fixture.GlossaryFile(), Fixture.SketchFileFile());
-        f.Tasks.OpenFiles().GetAwaiter().GetResult();
+        f.LocalFiles.WillPick(Fixture.LocalGlossary(), Fixture.LocalSketchFile());
+        await f.Tasks.OpenFiles();
         return f.Queries.Review!;
     }
 
@@ -19,9 +22,9 @@ public class ReviewingTheFixtures
     }
 
     [Fact]
-    public void Motif_Glossarys_own_glossary_has_its_twenty_six_terms_in_order()
+    public async Task Motif_Glossarys_own_glossary_has_its_twenty_six_terms_in_order()
     {
-        var review = Own();
+        var review = await Own();
 
         review.Glossary.Title.Should().Be("Glossary");
         review.Glossary.Intro.Should().HaveCount(3);
@@ -31,74 +34,94 @@ public class ReviewingTheFixtures
     }
 
     [Fact]
-    public void Every_field_of_a_term_is_read()
+    public async Task Every_field_of_a_term_is_read()
     {
-        var files = Fixture.Term(Own(), "For opening files").Term;
+        var files = Fixture.Term(await Own(), "For opening files").Term;
 
-        files.Definition.Should().ContainSingle().Which.Should().StartWith("The port that reads a glossary file");
+        files.Definition.Should().ContainSingle()
+            .Which.Should().StartWith("The port that reads a glossary file");
         files.Kinds.Should().Equal(Kind.Port);
-        files.InCode.Should().Be("`ForOpeningFiles`; adapter `ForOpeningFilesViaPickerAndDrop`");
+        files.InCode.Should().Be(
+            "`ForOpeningFiles`; adapter `ForOpeningFilesViaPickerAndDrop`");
         files.Avoid.Should().Equal(new AvoidWord("Files", "the port's old name"));
         files.SketchIds.Should().Equal("9e1a0c03");
-        files.SeeAlso.Should().Equal(new SeeAlsoLink("Glossary Files", "glossary-files"));
+        files.SeeAlso.Should().Equal(
+            new SeeAlsoLink("Glossary Files", "glossary-files"));
         files.Status.Should().Be(Status.Proposed);
     }
 
     [Fact]
-    public void Avoid_words_keep_their_notes()
+    public async Task Avoid_words_keep_their_notes()
     {
-        var review = Own();
+        var review = await Own();
 
         Fixture.Term(review, "Glossary").Term.Avoid.Should().Equal(
-            new AvoidWord("dictionary"), new AvoidWord("language"), new AvoidWord("ubiquitous language", "ambiguous in .NET"));
-        Fixture.Term(review, "Reviewer").Term.Avoid.Select(a => a.Word).Should().Equal("user", "viewer", "reader");
+            new AvoidWord("dictionary"),
+            new AvoidWord("language"),
+            new AvoidWord("ubiquitous language", "ambiguous in .NET"));
+        Fixture.Term(review, "Reviewer").Term.Avoid.Select(a => a.Word)
+            .Should().Equal("user", "viewer", "reader");
         Fixture.Term(review, "Sketch file").Term.Avoid.Should().Equal(
-            new AvoidWord("sketch", "on its own; in Motif Sketch that's the ports-and-adapters view"),
-            new AvoidWord("project", "Motif Sketch's word for the file; here, \"project\" means the app a glossary belongs to"));
+            new AvoidWord("sketch",
+                "on its own; in Motif Sketch that's the ports-and-adapters view"),
+            new AvoidWord("project",
+                "Motif Sketch's word for the file; here, \"project\" means the "
+                + "app a glossary belongs to"));
         Fixture.Term(review, "Term").Term.Avoid.Should().Equal(
-            new AvoidWord("word", "for the whole entry; the heading is the term's name"),
+            new AvoidWord("word",
+                "for the whole entry; the heading is the term's name"),
             new AvoidWord("definition", "that's one part of a term"));
     }
 
     [Fact]
-    public void Proposed_terms_are_picked_out()
+    public async Task Proposed_terms_are_picked_out()
     {
-        var review = Own();
+        var review = await Own();
 
-        review.Terms.Where(t => t.Term.IsProposed).Select(t => t.Term.Name).Should().Equal(
-            "For opening files", "For opening repos", "Format note", "Problem", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
+        review.Terms.Where(t => t.Term.IsProposed).Select(t => t.Term.Name)
+            .Should().Equal(
+                "For opening files", "For opening repos", "Format note",
+                "Problem", "Repo link", "Review", "Sketch file", "Sketch item",
+                "Sketch note", "Source");
         review.ProposedCount.Should().Be(10);
     }
 
     [Fact]
-    public void Terms_are_grouped_by_the_seven_kinds_in_order()
+    public async Task Terms_are_grouped_by_the_seven_kinds_in_order()
     {
-        var review = Own();
+        var review = await Own();
 
         review.Groups.Select(g => g.Kind).Should().Equal(
-            Kind.System, Kind.Actor, Kind.ExternalSystem, Kind.Storage, Kind.Port, Kind.DomainConcept);
-        review.Groups.Single(g => g.Kind == Kind.Port).Terms.Select(t => t.Term.Name).Should().Equal("For opening files", "For opening repos", "User port");
+            Kind.System, Kind.Actor, Kind.ExternalSystem, Kind.Storage,
+            Kind.Port, Kind.DomainConcept);
+        review.Groups.Single(g => g.Kind == Kind.Port).Terms
+            .Select(t => t.Term.Name)
+            .Should().Equal("For opening files", "For opening repos", "User port");
     }
 
     [Fact]
-    public void Sketch_ids_resolve_to_names_in_the_sketch_file()
+    public async Task Sketch_ids_resolve_to_names_in_the_sketch_file()
     {
-        var review = Own();
+        var review = await Own();
 
-        Fixture.Term(review, "Motif Glossary").Sketch.Single().Item!.Name.Should().Be("Motif.Glossary");
-        Fixture.Term(review, "Reviewer").Sketch.Single().Item!.Type.Should().Be("primary actor");
-        Fixture.Term(review, "User port").Sketch.Single().Item.Should().Be(new SketchItem("9e1a0c01", "User", "driving port", Kind.Port));
+        Fixture.Term(review, "Motif Glossary").Sketch.Single().Item!.Name
+            .Should().Be("Motif.Glossary");
+        Fixture.Term(review, "Reviewer").Sketch.Single().Item!.Type
+            .Should().Be("primary actor");
+        Fixture.Term(review, "User port").Sketch.Single().Item.Should().Be(
+            new SketchItem("9e1a0c01", "User", "driving port", Kind.Port));
     }
 
     [Fact]
-    public void Motif_Glossarys_own_glossary_follows_the_format_and_its_sketch()
+    public async Task Motif_Glossarys_own_glossary_follows_the_format_and_its_sketch()
     {
-        var review = Own();
+        var review = await Own();
 
         review.Terms.SelectMany(t => t.FormatNotes).Should().BeEmpty();
         review.Terms.SelectMany(t => t.SketchNotes).Should().BeEmpty();
         review.WithoutTerms.Should().BeEmpty();
-        review.Terms.SelectMany(t => t.SeeAlso).Should().OnlyContain(s => s.Term != null);
+        review.Terms.SelectMany(t => t.SeeAlso)
+            .Should().OnlyContain(s => s.Term != null);
     }
 
     [Fact]
@@ -107,7 +130,8 @@ public class ReviewingTheFixtures
         var f = new Fixture();
         f.Tasks.OpenExample();
 
-        f.Queries.Source.Should().Be(new Source(SourceKind.Example, "Motif Sketch's glossary", "sketch.motifsketch.json"));
+        f.Queries.Source.Should().Be(new Source(
+            SourceKind.Example, "Motif Sketch's glossary", "sketch.motifsketch.json"));
         f.Queries.Review!.Terms.Should().HaveCount(48);
         f.Queries.Review.SketchFile!.Title.Should().Be("Motif Sketch");
         f.Queries.RepoLinkFragment.Should().BeNull();
@@ -116,11 +140,12 @@ public class ReviewingTheFixtures
     [Fact]
     public async Task A_term_with_two_kinds_is_in_both_groups_with_both_sketch_ids_resolved()
     {
-        // The Example's terms each have one kind now that its ports are named "For …", so this one
-        // names the Clipboard external system and the For copying port, as it did before.
+        // The Example's terms each have one kind now that its ports are named
+        // "For …", so this one names the Clipboard external system and the
+        // For copying port, as it did before.
         var f = new Fixture();
         f.LocalFiles.WillPick(
-            Fixture.GlossaryFile("""
+            Fixture.LocalGlossary("""
                 # Glossary
 
                 ## Clipboard
@@ -130,15 +155,18 @@ public class ReviewingTheFixtures
                 - **Kind:** external system, port
                 - **Sketch:** `c5a10a0a`, `d6b20c06`
                 """),
-            Fixture.SketchFileFile(Example.SketchFile()));
+            Fixture.LocalSketchFile(Example.SketchFile()));
         await f.Tasks.OpenFiles();
         var review = f.Queries.Review!;
         var clipboard = Fixture.Term(review, "Clipboard");
 
         clipboard.Term.Kinds.Should().Equal(Kind.ExternalSystem, Kind.Port);
-        review.Groups.Single(g => g.Kind == Kind.ExternalSystem).Terms.Should().Contain(clipboard);
-        review.Groups.Single(g => g.Kind == Kind.Port).Terms.Should().Contain(clipboard);
-        clipboard.Sketch.Select(s => s.Item!.Type).Should().Equal("external system", "driven port");
+        review.Groups.Single(g => g.Kind == Kind.ExternalSystem).Terms
+            .Should().Contain(clipboard);
+        review.Groups.Single(g => g.Kind == Kind.Port).Terms
+            .Should().Contain(clipboard);
+        clipboard.Sketch.Select(s => s.Item!.Type)
+            .Should().Equal("external system", "driven port");
     }
 
     [Fact]
@@ -146,8 +174,11 @@ public class ReviewingTheFixtures
     {
         var review = TheExample();
 
-        review.Terms.Where(t => t.NoteCount > 0)
-            .Select(t => $"{t.Term.Name}: {string.Join(", ", t.FormatNotes.Select(n => n.Text).Concat(t.SketchNotes.Select(n => n.Text)))}")
+        review.Terms
+            .Where(t => t.NoteCount > 0)
+            .Select(t => $"{t.Term.Name}: " + string.Join(", ",
+                t.FormatNotes.Select(n => n.Text)
+                    .Concat(t.SketchNotes.Select(n => n.Text))))
             .Should().BeEmpty();
         review.WithoutTerms.Should().BeEmpty();
     }
@@ -157,9 +188,13 @@ public class ReviewingTheFixtures
     {
         var review = TheExample();
 
-        // "project, on its own" and "fake (a fake stands in ...)" are explained clashes, not slips.
-        Fixture.Term(review, "Planned project").Term.Avoid.First().Should().Be(new AvoidWord("project", "on its own"));
-        Fixture.Term(review, "Checks adapter").Term.Avoid.Single().Word.Should().Be("fake");
-        Fixture.Term(review, "Sketch").Term.Avoid.Select(a => a.Word).Should().Equal("hexagon", "sketch");
+        // "project, on its own" and "fake (a fake stands in ...)" are
+        // explained clashes, not slips.
+        Fixture.Term(review, "Planned project").Term.Avoid.First()
+            .Should().Be(new AvoidWord("project", "on its own"));
+        Fixture.Term(review, "Checks adapter").Term.Avoid.Single().Word
+            .Should().Be("fake");
+        Fixture.Term(review, "Sketch").Term.Avoid.Select(a => a.Word)
+            .Should().Equal("hexagon", "sketch");
     }
 }

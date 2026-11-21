@@ -19,9 +19,10 @@ public sealed class ForOpeningReposViaGitHub(HttpMessageHandler github)
     public async Task<RepoFiles> Read(
         RepoName repo, CancellationToken cancellationToken = default)
     {
-        var glossary = Fetch(repo, "motif/glossary.md", cancellationToken);
+        var glossary = Fetch(
+            repo, $"motif/{Glossary.FileName}", cancellationToken);
         var sketch = Fetch(
-            repo, "motif/sketch.motifsketch.json", cancellationToken);
+            repo, $"motif/{SketchFile.FileName}", cancellationToken);
         return new RepoFiles(await glossary, await sketch);
     }
 

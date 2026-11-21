@@ -4,16 +4,18 @@ using System.Text.RegularExpressions;
 namespace Motif.Glossary;
 
 /// <summary>
-/// Reads a motif/glossary.md into a <see cref="Glossary"/>. Hand-written rather than Markdig: the format is a
-/// fixed, line-based shape (a # title, ## per term, a bold-labelled field list), so a small reader is enough,
-/// and the core keeps no package references for the dotnet motif CLI to inherit.
-/// It never fails: whatever doesn't fit the format is kept as definition text, and the notes point it out.
+/// Reads a motif/glossary.md into a <see cref="Glossary"/>, by hand rather
+/// than with Markdig (decision 10). It never fails: whatever doesn't fit the
+/// format is kept as definition text, and the notes point it out.
 /// </summary>
 public static partial class GlossaryReader
 {
     public static Glossary Read(string markdown)
     {
-        var lines = markdown.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+        var lines = markdown
+            .Replace("\r\n", "\n")
+            .Replace('\r', '\n')
+            .Split('\n');
         string? title = null;
         var intro = new List<string>();
         var terms = new List<Term>();
@@ -42,10 +44,12 @@ public static partial class GlossaryReader
             // Code fences: nothing inside one is a heading or a field.
             if (fence is not null)
             {
-                if (trimmed.StartsWith(fence, StringComparison.Ordinal)) fence = null;
+                if (trimmed.StartsWith(fence, StringComparison.Ordinal))
+                    fence = null;
                 continue;
             }
-            if (trimmed.StartsWith("```", StringComparison.Ordinal) || trimmed.StartsWith("~~~", StringComparison.Ordinal))
+            if (trimmed.StartsWith("```", StringComparison.Ordinal)
+                || trimmed.StartsWith("~~~", StringComparison.Ordinal))
             {
                 EndParagraph();
                 fence = trimmed[..3];
@@ -77,13 +81,13 @@ public static partial class GlossaryReader
                 continue;
             }
 
-            if (current is not null && FieldLine().Match(line) is { Success: true } field)
+            if (current is not null
+                && FieldLine().Match(line) is { Success: true } field)
             {
                 EndParagraph();
                 var value = new StringBuilder(field.Groups["value"].Value.Trim());
                 // An indented line straight after a field carries on its value.
-                while (n + 1 < lines.Length && lines[n + 1].Length > 0 && char.IsWhiteSpace(lines[n + 1][0])
-                       && lines[n + 1].Trim().Length > 0 && !ListItem().IsMatch(lines[n + 1]))
+                while (n + 1 < lines.Length && CarriesOn(lines[n + 1]))
                 {
                     value.Append(' ').Append(lines[++n].Trim());
                 }
@@ -107,17 +111,25 @@ public static partial class GlossaryReader
         return new Glossary(title, intro, terms);
     }
 
+    private static bool CarriesOn(string line) =>
+        line.Length > 0
+        && char.IsWhiteSpace(line[0])
+        && line.Trim().Length > 0
+        && !ListItem().IsMatch(line);
+
     private static (int Level, string Text)? Heading(string line)
     {
-        var m = HeadingLine().Match(line);
-        if (!m.Success) return null;
-        return (m.Groups["hashes"].Length, m.Groups["text"].Value.Trim().TrimEnd('#').Trim());
+        var match = HeadingLine().Match(line);
+        if (!match.Success) return null;
+        var text = match.Groups["text"].Value.Trim().TrimEnd('#').Trim();
+        return (match.Groups["hashes"].Length, text);
     }
 
     [GeneratedRegex(@"^ {0,3}(?<hashes>#{1,6})\s+(?<text>.+)$")]
     private static partial Regex HeadingLine();
 
-    [GeneratedRegex(@"^\s{0,3}[-*+]\s+\*\*(?<label>[^*]+?)\s*:?\s*\*\*\s*:?\s*(?<value>.*)$")]
+    [GeneratedRegex(
+        @"^\s{0,3}[-*+]\s+\*\*(?<label>[^*]+?)\s*:?\s*\*\*\s*:?\s*(?<value>.*)$")]
     private static partial Regex FieldLine();
 
     [GeneratedRegex(@"^\s*([-*+]|\d+\.)\s+")]
@@ -150,9 +162,7 @@ public static partial class GlossaryReader
             {
                 case "kind":
                 case "kinds":
-                    kindTexts.AddRange(SplitTopLevel(value, ',', ';')
-                        .Select(k => Collapse(StripNotes(Inline.PlainText(k)).Trim().Trim('.')))
-                        .Where(k => k.Length > 0));
+                    kindTexts.AddRange(KindTexts(value));
                     break;
                 case "avoid":
                     avoid.AddRange(AvoidWords(value));
@@ -182,12 +192,14 @@ public static partial class GlossaryReader
             Slug = Slug.Of(name),
             Definition = Definition,
             KindTexts = kindTexts,
-            Kinds = kindTexts.Select(k => Kinds.TryRead(k, out var kind) ? kind : (Kind?)null)
-                .OfType<Kind>().Distinct().ToList(),
+            Kinds = KnownKinds(kindTexts).Distinct().ToList(),
             Avoid = avoid,
             InCode = inCode,
-            Status = string.Equals(FirstWord(statusText), "proposed", StringComparison.OrdinalIgnoreCase)
-                ? Status.Proposed : Status.Agreed,
+            Status = string.Equals(
+                FirstWord(statusText), "proposed",
+                StringComparison.OrdinalIgnoreCase)
+                ? Status.Proposed
+                : Status.Agreed,
             StatusText = statusText,
             SketchIds = sketchIds,
             SketchText = sketchText,
@@ -196,16 +208,34 @@ public static partial class GlossaryReader
             Line = line,
         };
 
+        private static IEnumerable<Kind> KnownKinds(IEnumerable<string> texts)
+        {
+            foreach (var text in texts)
+            {
+                if (Kinds.TryRead(text, out var kind)) yield return kind;
+            }
+        }
+
         private static string? FirstWord(string? text) =>
-            text?.Split([' ', ',', ';', '('], StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            text?.Split([' ', ',', ';', '('], StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault();
     }
+
+    private static IEnumerable<string> KindTexts(string value) =>
+        SplitTopLevel(value, ',', ';')
+            .Select(k => Collapse(StripNotes(Inline.PlainText(k)).Trim().Trim('.')))
+            .Where(k => k.Length > 0);
 
     private static IEnumerable<string> SketchIds(string value)
     {
-        var codes = CodeSpan().Matches(value).Select(m => m.Groups[1].Value.Trim()).ToList();
+        var codes = CodeSpan().Matches(value)
+            .Select(m => m.Groups[1].Value.Trim())
+            .ToList();
         if (codes.Count > 0) return codes;
         return SplitTopLevel(StripNotes(value), ',', ';')
-            .Select(p => p.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "")
+            .Select(part => part.Trim()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault() ?? "")
             .Where(id => id.Length > 0);
     }
 
@@ -217,20 +247,24 @@ public static partial class GlossaryReader
             return links.Select(m =>
             {
                 var href = m.Groups["href"].Value.Trim();
-                return new SeeAlsoLink(Inline.PlainText(m.Groups["text"].Value), href.StartsWith('#') ? href[1..] : null);
+                var anchor = href.StartsWith('#') ? href[1..] : null;
+                return new SeeAlsoLink(
+                    Inline.PlainText(m.Groups["text"].Value), anchor);
             });
         }
         return SplitTopLevel(value, ',', ';')
-            .Select(p => Inline.PlainText(p).Trim())
-            .Where(p => p.Length > 0)
-            .Select(p => new SeeAlsoLink(p, null));
+            .Select(part => Inline.PlainText(part).Trim())
+            .Where(text => text.Length > 0)
+            .Select(text => new SeeAlsoLink(text, null));
     }
 
     /// <summary>
-    /// Avoid words, with the notes that go with them. "user (that's the port)" is the word "user" with a note;
-    /// "project, on its own" is "project" with the note "on its own"; "primary and secondary" is two words.
+    /// Avoid words, with the notes that go with them (decision 11). "user
+    /// (that's the port)" is the word "user" with a note; "project, on its
+    /// own" is "project" with the note "on its own"; "primary and secondary"
+    /// is two words.
     /// </summary>
-    internal static IEnumerable<AvoidWord> AvoidWords(string value)
+    private static IEnumerable<AvoidWord> AvoidWords(string value)
     {
         var words = new List<AvoidWord>();
         foreach (var piece in SplitTopLevel(value, ',', ';'))
@@ -239,13 +273,12 @@ public static partial class GlossaryReader
             rest = rest.Trim().TrimEnd('.');
             foreach (var lead in new[] { "and ", "or " })
             {
-                if (rest.StartsWith(lead, StringComparison.OrdinalIgnoreCase)) rest = rest[lead.Length..].TrimStart();
+                if (rest.StartsWith(lead, StringComparison.OrdinalIgnoreCase))
+                    rest = rest[lead.Length..].TrimStart();
             }
 
             // "on its own", "for a person": a note on the word before.
-            if (words.Count > 0 && (rest.StartsWith("on its own", StringComparison.OrdinalIgnoreCase)
-                || rest.StartsWith("for ", StringComparison.OrdinalIgnoreCase)
-                || rest.StartsWith("which ", StringComparison.OrdinalIgnoreCase)))
+            if (words.Count > 0 && IsNoteOnWordBefore(rest))
             {
                 var last = words[^1];
                 words[^1] = last with { Note = Join(last.Note, Join(rest, notes)) };
@@ -255,25 +288,39 @@ public static partial class GlossaryReader
             if (Quoted().Match(rest) is { Success: true } quoted)
             {
                 var after = quoted.Groups["rest"].Value.Trim();
-                words.Add(new AvoidWord(quoted.Groups["word"].Value.Trim(), Join(after.Length > 0 ? after : null, notes)));
+                words.Add(new AvoidWord(
+                    quoted.Groups["word"].Value.Trim(),
+                    Join(after.Length > 0 ? after : null, notes)));
                 continue;
             }
 
-            var parts = rest.Split(" and ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            for (var p = 0; p < parts.Length; p++)
+            var parts = rest.Split(" and ",
+                StringSplitOptions.RemoveEmptyEntries
+                | StringSplitOptions.TrimEntries);
+            for (var i = 0; i < parts.Length; i++)
             {
-                var word = Inline.PlainText(parts[p]).Trim().Trim('"', '“', '”');
+                var word = Inline.PlainText(parts[i]).Trim().Trim('"', '“', '”');
                 if (word.Length == 0) continue;
-                words.Add(new AvoidWord(word, p == parts.Length - 1 ? notes : null));
+                // Notes in brackets go with the last word of "a and b".
+                words.Add(new AvoidWord(word, i == parts.Length - 1 ? notes : null));
             }
         }
         return words;
     }
 
-    private static string? Join(string? a, string? b) =>
-        string.IsNullOrWhiteSpace(a) ? b : string.IsNullOrWhiteSpace(b) ? a : $"{a}; {b}";
+    private static bool IsNoteOnWordBefore(string text) =>
+        text.StartsWith("on its own", StringComparison.OrdinalIgnoreCase)
+        || text.StartsWith("for ", StringComparison.OrdinalIgnoreCase)
+        || text.StartsWith("which ", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>Takes the top-level parenthesised notes out of a piece of text.</summary>
+    private static string? Join(string? first, string? second) =>
+        string.IsNullOrWhiteSpace(first) ? second
+        : string.IsNullOrWhiteSpace(second) ? first
+        : $"{first}; {second}";
+
+    /// <summary>
+    /// Takes the top-level parenthesised notes out of a piece of text.
+    /// </summary>
     private static (string Remainder, string? Notes) TakeNotes(string text)
     {
         var rest = new StringBuilder();
@@ -291,16 +338,24 @@ public static partial class GlossaryReader
             }
             (depth > 0 ? note : rest).Append(c);
         }
+        // A bracket that never closes isn't a note: it stays in the text.
         if (note.Length > 0) rest.Append('(').Append(note);
-        return (Collapse(rest.ToString()), notes.Count == 0 ? null : string.Join("; ", notes));
+        return (
+            Collapse(rest.ToString()),
+            notes.Count == 0 ? null : string.Join("; ", notes));
     }
 
     private static string StripNotes(string text) => TakeNotes(text).Remainder;
 
-    private static string Collapse(string text) => string.Join(' ', text.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    private static string Collapse(string text) =>
+        string.Join(' ', text.Split(' ', StringSplitOptions.RemoveEmptyEntries));
 
-    /// <summary>Splits on the separators, but not inside parentheses, brackets or code spans.</summary>
-    private static List<string> SplitTopLevel(string text, params char[] separators)
+    /// <summary>
+    /// Splits on the separators, but not inside parentheses, brackets or code
+    /// spans.
+    /// </summary>
+    private static List<string> SplitTopLevel(
+        string text, params char[] separators)
     {
         var parts = new List<string>();
         var part = new StringBuilder();

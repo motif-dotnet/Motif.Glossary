@@ -1,6 +1,9 @@
 namespace Motif.Glossary;
 
-/// <summary>Where a term sits: one of the seven kinds. The review groups terms by kind, in this order.</summary>
+/// <summary>
+/// Where a term sits: one of the seven kinds. The review groups terms by kind,
+/// in this order.
+/// </summary>
 public enum Kind
 {
     System,
@@ -14,10 +17,14 @@ public enum Kind
 
 public static class Kinds
 {
-    /// <summary>The seven kinds, in the order the review shows them.</summary>
+    /// <summary>
+    /// The seven kinds, in the order the review shows them.
+    /// </summary>
     public static readonly IReadOnlyList<Kind> All = Enum.GetValues<Kind>();
 
-    /// <summary>A kind as the glossary writes it, such as "external system".</summary>
+    /// <summary>
+    /// A kind as the glossary writes it, such as "external system".
+    /// </summary>
     public static string Name(this Kind kind) => kind switch
     {
         Kind.System => "system",
@@ -30,7 +37,9 @@ public static class Kinds
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 
-    /// <summary>The plural heading the review uses for a group of terms of this kind.</summary>
+    /// <summary>
+    /// The plural heading the review uses for a group of terms of this kind.
+    /// </summary>
     public static string GroupName(this Kind kind) => kind switch
     {
         Kind.System => "System",
@@ -43,13 +52,17 @@ public static class Kinds
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
 
+    /// <summary>
+    /// Reads a kind as the glossary writes it, in any case.
+    /// </summary>
     public static bool TryRead(string text, out Kind kind)
     {
-        foreach (var k in All)
+        foreach (var known in All)
         {
-            if (string.Equals(k.Name(), text, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(
+                    known.Name(), text, StringComparison.OrdinalIgnoreCase))
             {
-                kind = k;
+                kind = known;
                 return true;
             }
         }

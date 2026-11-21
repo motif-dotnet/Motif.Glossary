@@ -2,7 +2,10 @@ using System.Text;
 
 namespace Motif.Glossary;
 
-/// <summary>Heading anchors, made the way GitHub makes them, so See also links resolve as they do there.</summary>
+/// <summary>
+/// Heading anchors, made the way GitHub makes them, so See also links resolve
+/// as they do there.
+/// </summary>
 public static class Slug
 {
     public static string Of(string heading)

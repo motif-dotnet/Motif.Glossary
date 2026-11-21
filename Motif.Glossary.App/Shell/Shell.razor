@@ -1,7 +1,5 @@
 @namespace Motif.Glossary.App
 @implements IDisposable
-@inject MotifGlossaryApplication App
-@inject Browser Browser
 
 <PageTitle>@PageTitle</PageTitle>
 
@@ -10,7 +8,7 @@
 <div class="app @(dragDepth > 0 ? "dragging" : "")" @onclick="CloseMenus"
      @ondragenter="DragEnter" @ondragleave="DragLeave" @ondragover:preventDefault="true" @ondrop="Drop" @ondrop:preventDefault="true">
     <header class="appbar">
-        <ToolSwitcher Current="glossary" Repo="@App.Source?.Repo?.ToString()" Open="@(menu == "tools")" OnToggle="@(() => Toggle("tools"))" />
+        <ToolSwitcher Current="glossary" Repo="@App.Source?.Repo?.ToString()" Open="@(menu == Menu.Tools)" OnToggle="@(() => Toggle(Menu.Tools))" />
 
         @if (App.Source is { } source)
         {
@@ -30,7 +28,7 @@
         <button class="cmd" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="wide">Repo</span></button>
         <button class="cmd" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="wide">Example</span></button>
         <div class="vsep"></div>
-        <ThemeMenu Theme="@theme" ThemeChanged="SetTheme" Open="@(menu == "theme")" OnToggle="@(() => Toggle("theme"))" />
+        <ThemeMenu Theme="@theme" ThemeChanged="SetTheme" Open="@(menu == Menu.Theme)" OnToggle="@(() => Toggle(Menu.Theme))" />
         <button class="cmd icon" title="Help" @onclick="ToggleHelp" @onclick:stopPropagation="true">@SuiteIcons.Help</button>
     </header>
 
@@ -38,7 +36,7 @@
     {
         <div class="progress" role="status" aria-label="Reading the repo"></div>
     }
-    @if (App.SketchFileProblem is { } sketchProblem && sketchProblem != Problem.None)
+    @if (App.SketchFileProblem is var sketchProblem && sketchProblem != Problem.None)
     {
         <div class="banner"><span><b>@sketchProblem.Title.</b> @sketchProblem.Text</span></div>
     }
@@ -47,7 +45,7 @@
         @if (App.Review is { } review)
         {
             <CascadingValue Value="links" IsFixed="false">
-                <ReviewView Review="review" Groups="App.Groups" Source="App.Source" ProposedOnly="App.ProposedOnly"
+                <ReviewView Review="review" Groups="App.Groups" ProposedOnly="App.ProposedOnly"
                             ProposedOnlyChanged="ShowProposedOnly" RepoLink="@RepoLinkUrl" CopyRepoLink="CopyRepoLink" Copied="copied"
                             ScrollToGroup="ScrollToGroup" />
             </CascadingValue>
@@ -93,7 +91,7 @@
         <div class="drop-overlay" aria-hidden="true"><div>Drop a <code>glossary.md</code>, with its sketch file if you like</div></div>
     }
 
-    @if (dialog == "paste")
+    @if (dialog == Dialog.Paste)
     {
         <div class="scrim" @onclick="CloseDialog">
             <div class="card dialog wide-dialog" role="dialog" aria-label="Paste a glossary" @onclick:stopPropagation="true">
@@ -105,7 +103,7 @@
             </div>
         </div>
     }
-    @if (dialog == "repo")
+    @if (dialog == Dialog.Repo)
     {
         <div class="scrim" @onclick="CloseDialog">
             <div class="card dialog" role="dialog" aria-label="Review a GitHub repo" @onclick:stopPropagation="true">

@@ -4,12 +4,19 @@ using Motif.Suite;
 
 namespace Motif.Glossary.App;
 
-/// <summary>The Web App's one page: the four ways in, then the Review. All the logic is behind the User port.</summary>
+/// <summary>
+/// The Web App's one page: the four ways in, then the Review. All the logic is
+/// behind the User port.
+/// </summary>
 public partial class Shell : IDisposable
 {
+    private enum Menu { None, Tools, Theme }
+
+    private enum Dialog { None, Paste, Repo }
+
     private bool started;
-    private string? menu;
-    private string? dialog;
+    private Menu menu;
+    private Dialog dialog;
     private string theme = "system";
     private string pasteText = "";
     private string repoText = "";
@@ -20,24 +27,35 @@ public partial class Shell : IDisposable
     private DotNetObjectReference<Shell>? self;
     private Review? shown;
 
-    private string PageTitle => App.Source is { } s ? $"{s.Name} · Motif Glossary" : "Motif Glossary";
-
-    private string? RepoLinkUrl => App.RepoLinkFragment is { } f ? BaseUrl() + "#" + f : null;
-
+    [Inject] private MotifGlossaryApplication App { get; set; } = null!;
+    [Inject] private Browser Browser { get; set; } = null!;
     [Inject] private Toaster Toaster { get; set; } = null!;
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    private string PageTitle => App.Source is { } source
+        ? $"{source.Name} · Motif Glossary"
+        : "Motif Glossary";
+
+    private string? RepoLinkUrl => App.RepoLinkFragment is { } fragment
+        ? BaseUrl() + "#" + fragment
+        : null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (firstRender)
+        {
+            await Start();
+        }
+        else if (shown != App.Review)
         {
             // A newly opened glossary starts at the top.
-            if (shown != App.Review)
-            {
-                shown = App.Review;
-                Browser.ScrollToTop(".scroll");
-            }
-            return;
+            shown = App.Review;
+            Browser.ScrollToTop(".scroll");
         }
+    }
+
+    private async Task Start()
+    {
         await Browser.Load();
         theme = Browser.Theme();
         Toaster.Changed += Refresh;
@@ -64,10 +82,19 @@ public partial class Shell : IDisposable
     {
         links = new Links(App.Review, App.Source, ScrollTo);
         copied = false;
-        // A repo review carries its repo link in the address bar; anything else clears a stale one.
-        if (App.RepoLinkFragment is { } fragment) Browser.SetFragment(fragment);
-        else if (App.Problem == Problem.None && RepoLink.TryRead(Browser.Fragment(), out _)) Browser.SetFragment(null);
-        // What went wrong is the outcome of a command, so it's a toast, as in every Motif tool.
+        // A repo review carries its repo link in the address bar; anything
+        // else clears a stale one.
+        if (App.RepoLinkFragment is { } fragment)
+        {
+            Browser.SetFragment(fragment);
+        }
+        else if (App.Problem == Problem.None
+                 && RepoLink.TryRead(Browser.Fragment(), out _))
+        {
+            Browser.SetFragment(null);
+        }
+        // What went wrong is the outcome of a command, so it's a toast, as in
+        // every Motif tool.
         if (App.Problem != Problem.None)
         {
             Toaster.Problem(App.Problem.Title, [App.Problem.Text]);
@@ -90,13 +117,13 @@ public partial class Shell : IDisposable
 
     private void ShowPaste()
     {
-        dialog = "paste";
+        dialog = Dialog.Paste;
         _ = FocusSoon("#paste-box");
     }
 
     private void ShowRepo()
     {
-        dialog = "repo";
+        dialog = Dialog.Repo;
         _ = FocusSoon("#repo-box");
     }
 
@@ -108,14 +135,14 @@ public partial class Shell : IDisposable
         Browser.Focus(selector);
     }
 
-    private void CloseDialog() => dialog = null;
+    private void CloseDialog() => dialog = Dialog.None;
 
     private void SubmitPaste()
     {
         App.Paste(pasteText);
         if (App.Problem == Problem.None)
         {
-            dialog = null;
+            dialog = Dialog.None;
             pasteText = "";
         }
         Opened();
@@ -124,7 +151,7 @@ public partial class Shell : IDisposable
     private async Task SubmitRepo()
     {
         if (string.IsNullOrWhiteSpace(repoText)) return;
-        dialog = null;
+        dialog = Dialog.None;
         var opening = App.OpenRepo(repoText);
         StateHasChanged();
         await opening;
@@ -134,12 +161,11 @@ public partial class Shell : IDisposable
 
     private void StartAgain()
     {
-        // Back to the four ways in. The application keeps nothing else, so a fresh one is simply a reload.
+        // Back to the four ways in. The application keeps nothing else, so a
+        // fresh one is simply a reload.
         Browser.SetFragment(null);
-        if (App.Review is not null || App.Problem != Problem.None) Navigation.NavigateTo(Navigation.BaseUri, forceLoad: true);
+        Navigation.NavigateTo(Navigation.BaseUri, forceLoad: true);
     }
-
-    [Inject] private NavigationManager Navigation { get; set; } = null!;
 
     private void ShowProposedOnly(bool value) => App.ShowProposedOnly(value);
 
@@ -148,9 +174,9 @@ public partial class Shell : IDisposable
         if (RepoLinkUrl is { } url) copied = await Browser.Copy(url);
     }
 
-    private void ScrollTo(Term term) => Browser.ScrollToTerm("term-" + term.Slug);
+    private void ScrollTo(Term term) => Browser.ScrollTo("term-" + term.Slug);
 
-    private void ScrollToGroup(string id) => Browser.ScrollToTerm(id);
+    private void ScrollToGroup(string id) => Browser.ScrollTo(id);
 
     private void DragEnter() => dragDepth++;
 
@@ -163,27 +189,27 @@ public partial class Shell : IDisposable
         Opened();
     }
 
-    private void Toggle(string name)
+    private void Toggle(Menu name)
     {
-        menu = menu == name ? null : name;
+        menu = menu == name ? Menu.None : name;
         helpOpen = false;
     }
 
     private void ToggleHelp()
     {
         helpOpen = !helpOpen;
-        menu = null;
+        menu = Menu.None;
     }
 
     private void Refresh() => InvokeAsync(StateHasChanged);
 
-    private void CloseMenus() => menu = null;
+    private void CloseMenus() => menu = Menu.None;
 
     private void SetTheme(string value)
     {
         theme = value;
         Browser.SetTheme(value);
-        menu = null;
+        menu = Menu.None;
     }
 
     private string BaseUrl()

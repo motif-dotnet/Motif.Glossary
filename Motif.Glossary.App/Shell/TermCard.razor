@@ -113,6 +113,10 @@
 
     private string? Id(Term term) => Anchor ? "term-" + term.Slug : null;
 
-    private static bool HasFields(Term t) =>
-        t.Avoid.Count > 0 || t.InCode is { Length: > 0 } || t.SketchIds.Count > 0 || t.SeeAlso.Count > 0 || t.OtherFields.Count > 0;
+    private static bool HasFields(Term term) =>
+        term.Avoid.Count > 0
+        || term.InCode is { Length: > 0 }
+        || term.SketchIds.Count > 0
+        || term.SeeAlso.Count > 0
+        || term.OtherFields.Count > 0;
 }
