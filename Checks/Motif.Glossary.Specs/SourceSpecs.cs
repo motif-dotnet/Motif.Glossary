@@ -136,7 +136,9 @@ public class SourceSpecs
     public async Task Opening_a_public_repo_gives_a_repo_link()
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary, Fixture.OwnSketchFile);
+        f.GitHub
+            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary)
+            .Commit("motif-dotnet/Motif.Glossary", "motif/sketch.motifsketch.json", Fixture.OwnSketchFile);
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
@@ -154,11 +156,13 @@ public class SourceSpecs
     public async Task A_repo_can_be_given_as_a_GitHub_URL(string given)
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
 
         await f.Tasks.OpenRepo(given);
 
-        f.Repos.Reads.Should().Equal(new RepoName("motif-dotnet", "Motif.Glossary"));
+        f.GitHub.Requests.Should().BeEquivalentTo(
+            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/glossary.md",
+            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/sketch.motifsketch.json");
     }
 
     [Theory]
@@ -174,7 +178,7 @@ public class SourceSpecs
 
         await f.Tasks.OpenRepo(given);
 
-        f.Repos.Reads.Should().BeEmpty();
+        f.GitHub.Requests.Should().BeEmpty();
         f.Queries.Problem.Should().Contain("isn't a GitHub repo");
     }
 
@@ -193,7 +197,7 @@ public class SourceSpecs
     public async Task A_repo_with_no_sketch_file_is_reviewed_without_one()
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
@@ -225,7 +229,10 @@ public class SourceSpecs
     public async Task A_repo_read_overtaken_by_something_else_is_dropped(string overtaker)
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary).Add("motif-dotnet/Motif.Sketch", Fixture.OwnGlossary).Hold();
+        f.GitHub
+            .Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary)
+            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md", Fixture.OwnGlossary)
+            .Hold();
 
         var reading = f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
         f.Queries.Loading.Should().BeTrue();
@@ -240,7 +247,7 @@ public class SourceSpecs
             case "a name that isn't a repo": overtaking = f.Tasks.OpenRepo("not a repo"); break;
             case "another repo": overtaking = f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch"); break;
         }
-        f.Repos.Release();
+        f.GitHub.Release();
         await Task.WhenAll(reading, overtaking);
 
         f.Queries.Source?.Name.Should().NotBe("motif-dotnet/Motif.Glossary");
@@ -291,7 +298,7 @@ public class SourceSpecs
     [Fact]
     public async Task GitHub_out_of_reach_says_so()
     {
-        var f = new Fixture { Repos = { Unreachable = true } };
+        var f = new Fixture { GitHub = { Unreachable = true } };
 
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch");
 
@@ -300,10 +307,23 @@ public class SourceSpecs
     }
 
     [Fact]
+    public async Task GitHub_failing_isnt_taken_for_a_repo_with_no_glossary()
+    {
+        var f = new Fixture();
+        f.GitHub
+            .Commit("motif-dotnet/Motif.Sketch", "motif/glossary.md", Fixture.OwnGlossary)
+            .Down(System.Net.HttpStatusCode.ServiceUnavailable);
+
+        await f.Tasks.OpenRepo("motif-dotnet/Motif.Sketch");
+
+        f.Queries.Problem.Should().StartWith("GitHub couldn't be reached for motif-dotnet/Motif.Sketch").And.Contain("503");
+    }
+
+    [Fact]
     public async Task A_repo_link_opens_straight_into_the_review()
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
 
         (await f.Tasks.OpenLink("#repo=motif-dotnet/Motif.Glossary")).Should().BeTrue();
 
@@ -314,11 +334,13 @@ public class SourceSpecs
     public async Task A_repo_link_can_be_escaped_and_in_any_case()
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
 
         (await f.Tasks.OpenLink("#REPO=motif-dotnet%2FMotif.Glossary")).Should().BeTrue();
 
-        f.Repos.Reads.Should().Equal(new RepoName("motif-dotnet", "Motif.Glossary"));
+        f.GitHub.Requests.Should().BeEquivalentTo(
+            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/glossary.md",
+            "https://raw.githubusercontent.com/motif-dotnet/Motif.Glossary/HEAD/motif/sketch.motifsketch.json");
     }
 
     [Theory]
@@ -332,14 +354,14 @@ public class SourceSpecs
 
         (await f.Tasks.OpenLink(fragment)).Should().BeFalse();
 
-        f.Repos.Reads.Should().BeEmpty();
+        f.GitHub.Requests.Should().BeEmpty();
     }
 
     [Fact]
     public async Task Only_a_repo_review_has_a_repo_link()
     {
         var f = new Fixture();
-        f.Repos.Add("motif-dotnet/Motif.Glossary", Fixture.OwnGlossary);
+        f.GitHub.Commit("motif-dotnet/Motif.Glossary", "motif/glossary.md", Fixture.OwnGlossary);
         await f.Tasks.OpenRepo("motif-dotnet/Motif.Glossary");
 
         f.Tasks.OpenExample();

@@ -29,6 +29,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Motif.Glossary\Motif.Glossary.UseCases\Motif.Glossary.UseCases.csproj" />
     <ProjectReference Include="..\Motif.Glossary.Fakes\Motif.Glossary.Fakes.csproj" />
+    <ProjectReference Include="..\..\Adapters\Motif.Glossary.ForOpeningFiles\Motif.Glossary.ForOpeningFiles.csproj" />
+    <ProjectReference Include="..\..\Adapters\Motif.Glossary.ForOpeningRepos\Motif.Glossary.ForOpeningRepos.csproj" />
   </ItemGroup>
 
 </Project>

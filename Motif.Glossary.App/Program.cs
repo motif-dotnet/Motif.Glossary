@@ -10,7 +10,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddSingleton(_ => new ForOpeningReposViaGitHub(new HttpClient()));
+builder.Services.AddSingleton(_ => new ForOpeningReposViaGitHub(new HttpClientHandler()));
 builder.Services.AddSingleton<ForOpeningFilesViaPickerAndDrop>();
 builder.Services.AddSingleton(sp => new MotifGlossaryApplication(
     sp.GetRequiredService<ForOpeningReposViaGitHub>(),

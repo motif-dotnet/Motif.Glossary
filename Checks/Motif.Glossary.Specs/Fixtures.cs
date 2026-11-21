@@ -1,15 +1,17 @@
+using Motif.Glossary.Adapters;
 using Motif.Glossary.Fakes;
 
 namespace Motif.Glossary.Specs;
 
-/// <summary>The application wired to fakes, and the fixtures: this repo's motif/ folder and the Example (Motif Sketch's).</summary>
+/// <summary>The application over its real adapters, with only their Fittings faked, and the fixtures: this repo's motif/ folder and the Example (Motif Sketch's).</summary>
 public sealed class Fixture
 {
-    public FakeRepos Repos { get; } = new();
+    public FakeGitHub GitHub { get; } = new();
     public FakeFiles Files { get; } = new();
     public MotifGlossaryApplication App { get; }
 
-    public Fixture() => App = new MotifGlossaryApplication(Repos, Files);
+    public Fixture() => App = new MotifGlossaryApplication(
+        new ForOpeningReposViaGitHub(GitHub), Files);
 
     public UserTasks Tasks => App;
     public UserQueries Queries => App;
