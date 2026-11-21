@@ -13,9 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.UseCases", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{09DF2EE5-5FE7-3EC7-59CB-CAD7E0928979}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.Repos", "Adapters\Motif.Glossary.Repos\Motif.Glossary.Repos.csproj", "{6853C402-C082-4F87-A2C8-92E0054A0698}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.ForOpeningRepos", "Adapters\Motif.Glossary.ForOpeningRepos\Motif.Glossary.ForOpeningRepos.csproj", "{6853C402-C082-4F87-A2C8-92E0054A0698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.Files", "Adapters\Motif.Glossary.Files\Motif.Glossary.Files.csproj", "{3047F33A-64C5-40C8-9B17-EC5E3CFB6707}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.ForOpeningFiles", "Adapters\Motif.Glossary.ForOpeningFiles\Motif.Glossary.ForOpeningFiles.csproj", "{3047F33A-64C5-40C8-9B17-EC5E3CFB6707}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checks", "Checks", "{36CBE016-26E7-D9D2-6ED5-AE44737356E1}"
 EndProject

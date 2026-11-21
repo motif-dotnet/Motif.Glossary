@@ -18,8 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Motif.Glossary\Motif.Glossary.UseCases\Motif.Glossary.UseCases.csproj" />
     <!-- The Web App is the composition root, so it alone knows the real adapters. -->
-    <ProjectReference Include="..\Adapters\Motif.Glossary.Repos\Motif.Glossary.Repos.csproj" />
-    <ProjectReference Include="..\Adapters\Motif.Glossary.Files\Motif.Glossary.Files.csproj" />
+    <ProjectReference Include="..\Adapters\Motif.Glossary.ForOpeningRepos\Motif.Glossary.ForOpeningRepos.csproj" />
+    <ProjectReference Include="..\Adapters\Motif.Glossary.ForOpeningFiles\Motif.Glossary.ForOpeningFiles.csproj" />
   </ItemGroup>
 
 </Project>

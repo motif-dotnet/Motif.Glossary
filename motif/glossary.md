@@ -31,14 +31,27 @@ One bold-labelled line under a term: **Kind**, **Avoid**, **In code**, **Status*
 - **Avoid:** property, attribute
 - **See also:** [Term](#term)
 
-## Files
+## For opening files
 
 The port that reads a glossary file the Reviewer opens or drops in, and a sketch file with it if there is one.
 
 - **Kind:** port
-- **In code:** `Files`; real adapter `BrowserFiles`
+- **Avoid:** Files (the port's old name)
+- **In code:** `ForOpeningFiles`; adapter `ForOpeningFilesViaPickerAndDrop`
+- **Status:** proposed
 - **Sketch:** `9e1a0c03`
 - **See also:** [Glossary Files](#glossary-files)
+
+## For opening repos
+
+The port that reads a public repo's `motif/glossary.md` and, if there is one, its sketch file, from the default branch.
+
+- **Kind:** port
+- **Avoid:** Repos (the port's old name)
+- **In code:** `ForOpeningRepos`; adapter `ForOpeningReposViaGitHub`
+- **Status:** proposed
+- **Sketch:** `9e1a0c02`
+- **See also:** [GitHub](#github)
 
 ## Format note
 
@@ -52,12 +65,12 @@ A gentle note on a term that doesn't follow the glossary format: no kind, a kind
 
 ## GitHub
 
-Where public repos are read from: a repo's `motif/glossary.md` and, if there is one, its sketch file, from the default branch. Also the name of the real adapter on the Repos port.
+Where public repos are read from: a repo's `motif/glossary.md` and, if there is one, its sketch file, from the default branch. Also the way the For opening repos port reads them.
 
 - **Kind:** external system
-- **In code:** `GitHubRepos`
+- **In code:** `ForOpeningReposViaGitHub`
 - **Sketch:** `9e1a0a03`
-- **See also:** [Repos](#repos)
+- **See also:** [For opening repos](#for-opening-repos)
 
 ## Glossary
 
@@ -74,7 +87,7 @@ Where a glossary on the Reviewer's computer comes from: a local `glossary.md`, o
 
 - **Kind:** storage
 - **Sketch:** `9e1a0a04`
-- **See also:** [Files](#files)
+- **See also:** [For opening files](#for-opening-files)
 
 ## Kind
 
@@ -101,15 +114,6 @@ A link ending `#repo=owner/name` that opens straight into a review of that publi
 - **Avoid:** snapshot link (Motif Sketch's word for a link that carries the whole project), share link
 - **In code:** `RepoLink`, `RepoName`
 - **Status:** proposed
-
-## Repos
-
-The port that reads a public repo's `motif/glossary.md` and, if there is one, its sketch file, from the default branch.
-
-- **Kind:** port
-- **In code:** `Repos`
-- **Sketch:** `9e1a0c02`
-- **See also:** [GitHub](#github)
 
 ## Review
 

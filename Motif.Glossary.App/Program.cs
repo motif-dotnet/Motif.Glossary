@@ -10,14 +10,14 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddSingleton(_ => new GitHubRepos(new HttpClient()));
-builder.Services.AddSingleton<BrowserFiles>();
+builder.Services.AddSingleton(_ => new ForOpeningReposViaGitHub(new HttpClient()));
+builder.Services.AddSingleton<ForOpeningFilesViaPickerAndDrop>();
 builder.Services.AddSingleton(sp => new MotifGlossaryApplication(
-    sp.GetRequiredService<GitHubRepos>(),
-    sp.GetRequiredService<BrowserFiles>()));
+    sp.GetRequiredService<ForOpeningReposViaGitHub>(),
+    sp.GetRequiredService<ForOpeningFilesViaPickerAndDrop>()));
 builder.Services.AddSingleton<Browser>();
 builder.Services.AddSingleton<Toaster>();
 
 var host = builder.Build();
-await host.Services.GetRequiredService<BrowserFiles>().Start();
+await host.Services.GetRequiredService<ForOpeningFilesViaPickerAndDrop>().Start();
 await host.RunAsync();

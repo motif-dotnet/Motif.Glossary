@@ -1,7 +1,7 @@
 namespace Motif.Glossary.Fakes;
 
 /// <summary>Public repos held in memory. A repo not added has no glossary; <see cref="Unreachable"/> makes every read fail.</summary>
-public sealed class FakeRepos : Repos
+public sealed class FakeRepos : ForOpeningRepos
 {
     private readonly Dictionary<string, RepoFiles> repos = new(StringComparer.OrdinalIgnoreCase);
 

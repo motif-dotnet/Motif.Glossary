@@ -4,7 +4,7 @@ namespace Motif.Glossary;
 public sealed record LocalFile(string Name, string Text);
 
 /// <summary>Reads a glossary.md the Reviewer opens or drops in, and a sketch file with it if there is one.</summary>
-public interface Files
+public interface ForOpeningFiles
 {
     /// <summary>Shows the file picker. Empty if the Reviewer cancels.</summary>
     Task<IReadOnlyList<LocalFile>> Pick();

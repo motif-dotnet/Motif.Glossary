@@ -1,7 +1,7 @@
 namespace Motif.Glossary.Fakes;
 
 /// <summary>Files the Reviewer will pick or has dropped, set up by the spec. Picking with nothing set up is a cancel.</summary>
-public sealed class FakeFiles : Files
+public sealed class FakeFiles : ForOpeningFiles
 {
     private IReadOnlyList<LocalFile> toPick = [];
     private IReadOnlyList<LocalFile> dropped = [];

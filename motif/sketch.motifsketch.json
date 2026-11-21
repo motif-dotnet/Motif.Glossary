@@ -98,7 +98,7 @@
       },
       {
         "id": "9e1a0c02",
-        "name": "Repos",
+        "name": "For opening repos",
         "description": "Reads a public repo's motif/glossary.md and, when it's there, its sketch, from the default branch",
         "side": "driven",
         "isUser": false,
@@ -115,7 +115,7 @@
           },
           {
             "id": "9e1a0d04",
-            "name": "Fake Repos",
+            "name": "Fake GitHub",
             "kind": "fake",
             "sources": []
           }
@@ -123,14 +123,14 @@
       },
       {
         "id": "9e1a0c03",
-        "name": "Files",
+        "name": "For opening files",
         "description": "Reads a glossary.md the Reviewer opens or drops in, and a sketch file with it if there is one",
         "side": "driven",
         "isUser": false,
         "adapters": [
           {
             "id": "9e1a0d05",
-            "name": "Browser Files",
+            "name": "Picker and Drop",
             "technology": "File picker and drag and drop (JS interop)",
             "description": "A glossary.md on the Reviewer's computer, opened or dropped in, with the sketch beside it if there is one",
             "kind": "real",
@@ -140,7 +140,7 @@
           },
           {
             "id": "9e1a0d06",
-            "name": "Fake Files",
+            "name": "Fake Local Files",
             "kind": "fake",
             "sources": []
           }

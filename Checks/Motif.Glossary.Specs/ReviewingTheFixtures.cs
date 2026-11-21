@@ -33,14 +33,15 @@ public class ReviewingTheFixtures
     [Fact]
     public void Every_field_of_a_term_is_read()
     {
-        var files = Fixture.Term(Own(), "Files").Term;
+        var files = Fixture.Term(Own(), "For opening files").Term;
 
         files.Definition.Should().ContainSingle().Which.Should().StartWith("The port that reads a glossary file");
         files.Kinds.Should().Equal(Kind.Port);
-        files.InCode.Should().Be("`Files`; real adapter `BrowserFiles`");
+        files.InCode.Should().Be("`ForOpeningFiles`; adapter `ForOpeningFilesViaPickerAndDrop`");
+        files.Avoid.Should().Equal(new AvoidWord("Files", "the port's old name"));
         files.SketchIds.Should().Equal("9e1a0c03");
         files.SeeAlso.Should().Equal(new SeeAlsoLink("Glossary Files", "glossary-files"));
-        files.Status.Should().Be(Status.Agreed);
+        files.Status.Should().Be(Status.Proposed);
     }
 
     [Fact]
@@ -65,8 +66,8 @@ public class ReviewingTheFixtures
         var review = Own();
 
         review.Terms.Where(t => t.Term.IsProposed).Select(t => t.Term.Name).Should().Equal(
-            "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
-        review.ProposedCount.Should().Be(7);
+            "For opening files", "For opening repos", "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
+        review.ProposedCount.Should().Be(9);
     }
 
     [Fact]
@@ -76,7 +77,7 @@ public class ReviewingTheFixtures
 
         review.Groups.Select(g => g.Kind).Should().Equal(
             Kind.System, Kind.Actor, Kind.ExternalSystem, Kind.Storage, Kind.Port, Kind.DomainConcept);
-        review.Groups.Single(g => g.Kind == Kind.Port).Terms.Select(t => t.Term.Name).Should().Equal("Files", "Repos", "User port");
+        review.Groups.Single(g => g.Kind == Kind.Port).Terms.Select(t => t.Term.Name).Should().Equal("For opening files", "For opening repos", "User port");
     }
 
     [Fact]

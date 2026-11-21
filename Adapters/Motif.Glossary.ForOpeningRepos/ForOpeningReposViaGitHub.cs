@@ -6,7 +6,7 @@ namespace Motif.Glossary.Adapters;
 /// Reads a public repo's motif/ folder from raw.githubusercontent.com, at HEAD (the default branch).
 /// No sign-in and no API rate limit; raw.githubusercontent.com allows cross-origin reads, so this works from Pages.
 /// </summary>
-public sealed class GitHubRepos(HttpClient http) : Repos
+public sealed class ForOpeningReposViaGitHub(HttpClient http) : ForOpeningRepos
 {
     public const string Host = "https://raw.githubusercontent.com";
 

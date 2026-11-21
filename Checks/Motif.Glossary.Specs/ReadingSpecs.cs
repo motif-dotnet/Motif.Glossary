@@ -13,8 +13,8 @@ public class ReadingSpecs
 
         f.Queries.ProposedOnly.Should().BeTrue();
         f.Queries.Groups.SelectMany(g => g.Terms).Select(t => t.Term.Name).Should().Equal(
-            "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
-        f.Queries.Groups.Select(g => g.Kind).Should().Equal(Kind.DomainConcept);
+            "For opening files", "For opening repos", "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
+        f.Queries.Groups.Select(g => g.Kind).Should().Equal(Kind.Port, Kind.DomainConcept);
 
         f.Tasks.ShowProposedOnly(false);
         f.Queries.Groups.SelectMany(g => g.Terms).Should().HaveCount(22);
