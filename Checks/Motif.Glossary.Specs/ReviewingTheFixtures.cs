@@ -19,13 +19,13 @@ public class ReviewingTheFixtures
     }
 
     [Fact]
-    public void Motif_Glossarys_own_glossary_has_its_twenty_two_terms_in_order()
+    public void Motif_Glossarys_own_glossary_has_its_twenty_six_terms_in_order()
     {
         var review = Own();
 
         review.Glossary.Title.Should().Be("Glossary");
         review.Glossary.Intro.Should().HaveCount(3);
-        review.Terms.Should().HaveCount(22);
+        review.Terms.Should().HaveCount(26);
         review.Terms[0].Term.Name.Should().Be("Avoid word");
         review.Terms[^1].Term.Name.Should().Be("User port");
     }
@@ -66,8 +66,8 @@ public class ReviewingTheFixtures
         var review = Own();
 
         review.Terms.Where(t => t.Term.IsProposed).Select(t => t.Term.Name).Should().Equal(
-            "For opening files", "For opening repos", "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
-        review.ProposedCount.Should().Be(9);
+            "For opening files", "For opening repos", "Format note", "Problem", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
+        review.ProposedCount.Should().Be(10);
     }
 
     [Fact]

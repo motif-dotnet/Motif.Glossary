@@ -13,11 +13,11 @@ public class ReadingSpecs
 
         f.Queries.ProposedOnly.Should().BeTrue();
         f.Queries.Groups.SelectMany(g => g.Terms).Select(t => t.Term.Name).Should().Equal(
-            "For opening files", "For opening repos", "Format note", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
+            "For opening files", "For opening repos", "Format note", "Problem", "Repo link", "Review", "Sketch file", "Sketch item", "Sketch note", "Source");
         f.Queries.Groups.Select(g => g.Kind).Should().Equal(Kind.Port, Kind.DomainConcept);
 
         f.Tasks.ShowProposedOnly(false);
-        f.Queries.Groups.SelectMany(g => g.Terms).Should().HaveCount(22);
+        f.Queries.Groups.SelectMany(g => g.Terms).Should().HaveCount(26);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class ReadingSpecs
     {
         var review = Fixture.Pasted(Fixture.OwnGlossary.Replace("\r\n", "\n").Replace("\n", "\r\n"));
 
-        review.Terms.Should().HaveCount(22);
+        review.Terms.Should().HaveCount(26);
         review.NoteCount.Should().Be(0);
     }
 

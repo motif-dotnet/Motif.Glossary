@@ -35,7 +35,7 @@ public class SourceSpecs
 
         await f.Tasks.OpenDroppedFiles();
 
-        f.Queries.Review!.Terms.Should().HaveCount(22);
+        f.Queries.Review!.Terms.Should().HaveCount(26);
         f.Queries.Review.SketchFile.Should().BeNull();
     }
 
@@ -115,7 +115,7 @@ public class SourceSpecs
         f.LocalFiles.WillPick(new LocalFile("terms.md", Fixture.OwnGlossary));
         await f.Tasks.OpenFiles();
         f.Queries.Source.Should().Be(new Source(SourceKind.Files, "terms.md"));
-        f.Queries.Review!.Terms.Should().HaveCount(22);
+        f.Queries.Review!.Terms.Should().HaveCount(26);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class SourceSpecs
         f.Tasks.Paste(Fixture.OwnGlossary);
 
         f.Queries.Source!.Kind.Should().Be(SourceKind.Pasted);
-        f.Queries.Review!.Terms.Should().HaveCount(22);
+        f.Queries.Review!.Terms.Should().HaveCount(26);
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class SourceSpecs
         await f.Tasks.OpenFiles();
 
         f.Queries.Source.Should().Be(new Source(SourceKind.Files, "glossary.md", "sketch.motifsketch.json"));
-        f.Queries.Review!.Terms.Should().HaveCount(22);
+        f.Queries.Review!.Terms.Should().HaveCount(26);
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class SourceSpecs
 
         (await f.Tasks.OpenLink("#repo=motif-dotnet/Motif.Glossary")).Should().BeTrue();
 
-        f.Queries.Review!.Terms.Should().HaveCount(22);
+        f.Queries.Review!.Terms.Should().HaveCount(26);
     }
 
     [Fact]

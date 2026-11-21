@@ -15,6 +15,14 @@ A word listed under a term's **Avoid** field: a synonym not to use for that term
 - **In code:** `AvoidWord`
 - **See also:** [Term](#term)
 
+## Deep adapter
+
+An adapter with real work behind a small port, whose own logic runs in every spec because only its Fitting is faked. Both of this app's adapters are deep.
+
+- **Kind:** domain concept
+- **Avoid:** deep port (depth belongs to the module, not its interface)
+- **See also:** [Fitting](#fitting), [Seam](#seam)
+
 ## Example
 
 The bundled glossary: Motif Sketch's own, with its sketch file. Shown when the Reviewer picks it, so there's something to look at straight away.
@@ -30,6 +38,15 @@ One bold-labelled line under a term: **Kind**, **Avoid**, **In code**, **Status*
 - **Kind:** domain concept
 - **Avoid:** property, attribute
 - **See also:** [Term](#term)
+
+## Fitting
+
+The thin part of an adapter that touches the outside world. Each member is one call to it, with no branches worth testing. There's a real Fitting and a fake one, and specs fake the Fitting.
+
+- **Kind:** domain concept
+- **Avoid:** core (the domain), driver (the driving side), gateway, wrapper
+- **In code:** `JsInteropLocalFiles`, `FakeLocalFiles`, `FakeGitHub`
+- **See also:** [Seam](#seam)
 
 ## For opening files
 
@@ -106,6 +123,15 @@ This app: it shows a project's glossary at a glance for review. Also the system 
 - **In code:** the root namespace `Motif.Glossary`
 - **Sketch:** `9e1a0a01`
 
+## Problem
+
+Why something the Reviewer tried didn't work, as a title and a sentence or two: shown as a toast here, but any UI could show it. A sketch file that couldn't be read is a problem too, shown as a banner while the review lasts.
+
+- **Kind:** domain concept
+- **Avoid:** error (nothing has failed in the app)
+- **In code:** `Problem`, `Problem.None`
+- **Status:** proposed
+
 ## Repo link
 
 A link ending `#repo=owner/name` that opens straight into a review of that public repo's glossary. It carries only the repo's name, so it always shows the latest glossary on the default branch.
@@ -131,6 +157,15 @@ The person who opens, drops or pastes a glossary, or follows a repo link, and re
 - **Kind:** actor
 - **Avoid:** user (that's the port), viewer (Motif Sketch's read-only actor), reader
 - **Sketch:** `9e1a0a02`
+
+## Seam
+
+The interface between an adapter and its Fitting, owned by the adapter and named for what it reaches (after Michael Feathers: a place where behaviour can be swapped without editing the code around it). Not a kind of port. Opening files has the Local Files Seam; GitHub's is the platform's `HttpMessageHandler`.
+
+- **Kind:** domain concept
+- **Avoid:** inner port (it would be mistaken for a port in the sketch)
+- **In code:** `LocalFiles`, `HttpMessageHandler`
+- **See also:** [Fitting](#fitting)
 
 ## Sketch file
 
