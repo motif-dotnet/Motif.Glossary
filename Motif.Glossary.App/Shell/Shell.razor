@@ -15,7 +15,7 @@
         @if (App.Source is { } source)
         {
             <div class="vsep wide"></div>
-            <span class="pill" title="@SourceTitle(source)">@SourceIcon(source.Kind)<span class="text">@source.Name</span>@if (source.SketchFileName is not null) {<span class="long"> · with sketch file</span>}</span>
+            <span class="pill" title="@source.About">@SourceIcon(source.Kind)<span class="text">@source.Name</span>@if (source.SketchFileName is not null) {<span class="long"> · with sketch file</span>}</span>
         }
 
         <div class="spacer"></div>
@@ -38,9 +38,9 @@
     {
         <div class="progress" role="status" aria-label="Reading the repo"></div>
     }
-    @if (App.SketchFileProblem is { } sketchProblem)
+    @if (App.SketchFileProblem is { } sketchProblem && sketchProblem != Problem.None)
     {
-        <div class="banner"><span>@sketchProblem</span></div>
+        <div class="banner"><span><b>@sketchProblem.Title.</b> @sketchProblem.Text</span></div>
     }
 
     <main class="scroll">

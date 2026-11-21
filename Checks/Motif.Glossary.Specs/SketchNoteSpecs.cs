@@ -93,7 +93,8 @@ public class SketchNoteSpecs
 
         f.Queries.Review!.Terms.Should().HaveCount(3);
         f.Queries.Review.SketchFile.Should().BeNull();
-        f.Queries.SketchFileProblem.Should().StartWith("The sketch file couldn't be read").And.Contain("It isn't valid JSON (");
+        f.Queries.SketchFileProblem.Title.Should().Be("The sketch file couldn't be read");
+        f.Queries.SketchFileProblem.Text.Should().StartWith("Sketch ids are shown as they are.").And.Contain("It isn't valid JSON (");
         f.Queries.Source!.SketchFileName.Should().BeNull();
     }
 

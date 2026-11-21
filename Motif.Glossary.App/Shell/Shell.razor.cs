@@ -66,11 +66,11 @@ public partial class Shell : IDisposable
         copied = false;
         // A repo review carries its repo link in the address bar; anything else clears a stale one.
         if (App.RepoLinkFragment is { } fragment) Browser.SetFragment(fragment);
-        else if (App.Problem is null && RepoLink.TryRead(Browser.Fragment(), out _)) Browser.SetFragment(null);
+        else if (App.Problem == Problem.None && RepoLink.TryRead(Browser.Fragment(), out _)) Browser.SetFragment(null);
         // What went wrong is the outcome of a command, so it's a toast, as in every Motif tool.
-        if (App.Problem is { } problem)
+        if (App.Problem != Problem.None)
         {
-            Toaster.Problem("That glossary can't be reviewed", [problem]);
+            Toaster.Problem(App.Problem.Title, [App.Problem.Text]);
             App.DismissProblem();
         }
         StateHasChanged();
@@ -113,7 +113,7 @@ public partial class Shell : IDisposable
     private void SubmitPaste()
     {
         App.Paste(pasteText);
-        if (App.Problem is null)
+        if (App.Problem == Problem.None)
         {
             dialog = null;
             pasteText = "";
@@ -128,7 +128,7 @@ public partial class Shell : IDisposable
         var opening = App.OpenRepo(repoText);
         StateHasChanged();
         await opening;
-        if (App.Problem is null) repoText = "";
+        if (App.Problem == Problem.None) repoText = "";
         Opened();
     }
 
@@ -136,7 +136,7 @@ public partial class Shell : IDisposable
     {
         // Back to the four ways in. The application keeps nothing else, so a fresh one is simply a reload.
         Browser.SetFragment(null);
-        if (App.Review is not null || App.Problem is not null) Navigation.NavigateTo(Navigation.BaseUri, forceLoad: true);
+        if (App.Review is not null || App.Problem != Problem.None) Navigation.NavigateTo(Navigation.BaseUri, forceLoad: true);
     }
 
     [Inject] private NavigationManager Navigation { get; set; } = null!;
@@ -199,14 +199,6 @@ public partial class Shell : IDisposable
         SourceKind.Pasted => Icons.Paste,
         SourceKind.Example => Icons.Example,
         _ => Icons.Open,
-    };
-
-    private static string SourceTitle(Source s) => s.Kind switch
-    {
-        SourceKind.Repo => $"motif/glossary.md from {s.Name}'s default branch" + (s.SketchFileName is null ? ", with no sketch file" : ", with its sketch file"),
-        SourceKind.Example => "The Example: Motif Sketch's glossary and sketch file",
-        SourceKind.Pasted => "Pasted Markdown" + (s.SketchFileName is { } f ? $", with {f}" : ""),
-        _ => s.Name + (s.SketchFileName is { } sketch ? $", with {sketch}" : ""),
     };
 
     public void Dispose()

@@ -28,7 +28,7 @@ public sealed class Fixture
     {
         var f = new Fixture();
         f.Tasks.Paste(markdown);
-        return f.Queries.Review ?? throw new InvalidOperationException(f.Queries.Problem);
+        return f.Queries.Review ?? throw new InvalidOperationException(f.Queries.Problem.Text);
     }
 
     public static TermReview Term(Review review, string name) => review.Terms.Single(t => t.Term.Name == name);

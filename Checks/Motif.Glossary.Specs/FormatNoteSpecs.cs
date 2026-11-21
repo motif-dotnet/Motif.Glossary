@@ -98,7 +98,7 @@ public class FormatNoteSpecs
         var f = new Fixture();
         f.Tasks.Paste("## Zed\n\n## Alpha\n\n- **Kind:** thing, other, more\n- **See also:** [Nowhere](#nowhere)\n");
 
-        f.Queries.Problem.Should().BeNull();
+        f.Queries.Problem.Should().Be(Problem.None);
         f.Queries.Review!.NoteCount.Should().Be(7);
     }
 }
