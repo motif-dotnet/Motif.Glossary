@@ -99,7 +99,8 @@ button.way:hover { border-color: var(--accent); }
 .paste-box { display: block; width: 100%; height: min(52vh, 420px); resize: vertical; font: 12px/1.5 "IBM Plex Mono", Consolas, monospace; color: var(--ink); background: var(--canvas); border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; }
 
 @media (max-width: 599px) {
-  .pill { max-width: 120px; }
+  /* Just the source's name: the kit leaves a pill's .long text to each tool */
+  .pill { max-width: 120px; } .pill .long { display: none; }
   .ways { grid-template-columns: 1fr; }
   .start { padding-top: 28px; }
   .review { padding: 16px 12px 48px; }

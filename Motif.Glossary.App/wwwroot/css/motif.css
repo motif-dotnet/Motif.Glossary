@@ -186,12 +186,13 @@ code { font-family: "IBM Plex Mono", Consolas, monospace; font-size: .92em; colo
 
 /* Narrow screens: commands lose their labels (put a label in a .wide span) */
 @media (max-width: 899px) {
-  .wide { display: none !important; }
+  /* The switcher's menu still says it's a preview */
+  .wide, .brand .preview-tag, .primary .long { display: none !important; }
   .cmd { padding: 0 8px; }
 }
 /* Phones: the bar must fit */
 @media (max-width: 599px) {
-  .brand .motif, .brand .preview-tag, .pill .long, .primary .long { display: none !important; }
+  .brand .motif, .pill .long { display: none !important; }
   .appbar { gap: 0; padding: 0 6px; }
   .brand { margin-right: 2px; }
 }
