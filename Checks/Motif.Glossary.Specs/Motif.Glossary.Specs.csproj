@@ -2,9 +2,6 @@
 
   <PropertyGroup>
     <RootNamespace>Motif.Glossary.Specs</RootNamespace>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

@@ -44,8 +44,15 @@ public sealed class Site : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var site = Path.Combine(AppContext.BaseDirectory, "site");
-        await Publish(site);
+        // MOTIF_SITE is a folder the app is already published to, as CI
+        // publishes it once for the specs and the deploy. Otherwise the
+        // specs publish it themselves.
+        var site = Environment.GetEnvironmentVariable("MOTIF_SITE");
+        if (string.IsNullOrEmpty(site))
+        {
+            site = Path.Combine(AppContext.BaseDirectory, "site");
+            await Publish(site);
+        }
         server = Serve(Path.Combine(site, "wwwroot"));
         await server.StartAsync();
         Url = server.Services.GetRequiredService<IServer>()

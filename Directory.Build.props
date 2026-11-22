@@ -1,4 +1,10 @@
 <Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <!-- Every JS module (the App's and each adapter's) gets a content hash in its name and an import-map
          entry, so a deploy takes effect at once instead of after GitHub Pages' 10-minute cache. -->
