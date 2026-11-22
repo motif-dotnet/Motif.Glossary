@@ -30,6 +30,7 @@ public static class Tools
     public static readonly IReadOnlyList<Tool> All =
     [
         new("sketch", "Sketch", "Sketch a context diagram and its ports and adapters, then export a solution plan.", "https://motif-dotnet.github.io/Motif.Sketch/", Preview: true),
+        new("bubbles", "Bubbles", "See a Motif app's architecture as bubbles, ringed with how well its specs check it.", "https://motif-dotnet.github.io/Motif.Bubbles/", NewUntil: new(2027, 1, 31), Preview: true),
         new("glossary", "Glossary", "Review a project's glossary at a glance.", "https://motif-dotnet.github.io/Motif.Glossary/", Preview: true),
         new("memory", "Memory", "Set up an agent's external memory, with the roles and workflow that suit you.", "https://motif-dotnet.github.io/Motif.Memory/", NewUntil: new(2026, 12, 31), Preview: true),
     ];
