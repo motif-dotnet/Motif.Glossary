@@ -1,6 +1,6 @@
 {
   "stryker-config": {
-    "solution": "Motif.Glossary.sln",
+    "solution": "Motif.Glossary.Specs.slnx",
     "mutate": [
       "!**/Motif.Glossary.Fakes/**"
     ],

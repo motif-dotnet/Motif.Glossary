@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Motif.Glossary/Motif.Glossary.Domain/Motif.Glossary.Domain.csproj" />
+  <Project Path="Motif.Glossary/Motif.Glossary.UseCases/Motif.Glossary.UseCases.csproj" />
+  <Project Path="Adapters/Motif.Glossary.ForOpeningFiles/Motif.Glossary.ForOpeningFiles.csproj" />
+  <Project Path="Adapters/Motif.Glossary.ForOpeningRepos/Motif.Glossary.ForOpeningRepos.csproj" />
+  <Project Path="Checks/Motif.Glossary.Fakes/Motif.Glossary.Fakes.csproj" />
+  <Project Path="Checks/Motif.Glossary.Specs/Motif.Glossary.Specs.csproj" />
+</Solution>
