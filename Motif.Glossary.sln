@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.Fakes", "Che
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.Specs", "Checks\Motif.Glossary.Specs\Motif.Glossary.Specs.csproj", "{3A229E69-86A1-4C41-85A3-B54646253402}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motif.Glossary.BrowserSpecs", "Checks\Motif.Glossary.BrowserSpecs\Motif.Glossary.BrowserSpecs.csproj", "{10FA10A6-692F-474A-92D4-5D061B764BF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,18 @@ Global
 		{3A229E69-86A1-4C41-85A3-B54646253402}.Release|x64.Build.0 = Release|Any CPU
 		{3A229E69-86A1-4C41-85A3-B54646253402}.Release|x86.ActiveCfg = Release|Any CPU
 		{3A229E69-86A1-4C41-85A3-B54646253402}.Release|x86.Build.0 = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Debug|x86.Build.0 = Debug|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|x64.Build.0 = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|x86.ActiveCfg = Release|Any CPU
+		{10FA10A6-692F-474A-92D4-5D061B764BF1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,5 +142,6 @@ Global
 		{3047F33A-64C5-40C8-9B17-EC5E3CFB6707} = {09DF2EE5-5FE7-3EC7-59CB-CAD7E0928979}
 		{E10F017B-2DB0-4CEF-BA4E-15010E7110BF} = {36CBE016-26E7-D9D2-6ED5-AE44737356E1}
 		{3A229E69-86A1-4C41-85A3-B54646253402} = {36CBE016-26E7-D9D2-6ED5-AE44737356E1}
+		{10FA10A6-692F-474A-92D4-5D061B764BF1} = {36CBE016-26E7-D9D2-6ED5-AE44737356E1}
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,6 @@
 # Manual checks
 
-Every spec runs the real adapters over fake Fittings, so the real Fittings are checked by hand. Run a Fitting's checks before a release when it has changed, in Chrome, and in Firefox when the browser's side of it has changed. If a fake Fitting turns out to behave differently from the real one, tighten the contract in its Seam's doc comments, and fix the fake.
+Every spec runs the real adapters over fake Fittings, so the real Fittings are checked by hand. The browser specs (`Checks/Motif.Glossary.BrowserSpecs`, decision 18) cover the page's layout, the theme and repo links, in Edge, but not the file picker, dropping, or the real GitHub. Run a Fitting's checks before a release when it has changed, in Chrome, and in Firefox when the browser's side of it has changed. If a fake Fitting turns out to behave differently from the real one, tighten the contract in its Seam's doc comments, and fix the fake.
 
 ## Local Files (`JsInteropLocalFiles`, `wwwroot/files.js`)
 

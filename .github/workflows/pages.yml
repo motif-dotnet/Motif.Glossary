@@ -23,6 +23,7 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The browser specs use the Edge the runner image comes with.
       - name: Test
         run: dotnet test Motif.Glossary.sln -c Release
 

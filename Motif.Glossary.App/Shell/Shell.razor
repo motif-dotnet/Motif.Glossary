@@ -7,7 +7,7 @@
 {
 <div class="app @(dragDepth > 0 ? "dragging" : "")" @onclick="CloseMenus"
      @ondragenter="DragEnter" @ondragleave="DragLeave" @ondragover:preventDefault="true" @ondrop="Drop" @ondrop:preventDefault="true">
-    <header class="appbar">
+    <header class="appbar @(App.Review is null ? "" : "reviewing")">
         <ToolSwitcher Current="glossary" Repo="@App.Source?.Repo?.ToString()" Open="@(menu == Menu.Tools)" OnToggle="@(() => Toggle(Menu.Tools))" />
 
         @if (App.Source is { } source)
@@ -21,12 +21,12 @@
         @if (App.Review is not null)
         {
             <button class="cmd" title="Back to the four ways in" @onclick="StartAgain">@Icons.Back<span class="wide">Start again</span></button>
-            <div class="vsep"></div>
+            <div class="vsep way-in"></div>
         }
-        <button class="cmd" title="Open a glossary.md, with its sketch file if you like" @onclick="OpenFiles">@Icons.Open<span class="wide">Open</span></button>
-        <button class="cmd" title="Paste a glossary's Markdown" @onclick="ShowPaste">@Icons.Paste<span class="wide">Paste</span></button>
-        <button class="cmd" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="wide">Repo</span></button>
-        <button class="cmd" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="wide">Example</span></button>
+        <button class="cmd way-in" title="Open a glossary.md, with its sketch file if you like" @onclick="OpenFiles">@Icons.Open<span class="wide">Open</span></button>
+        <button class="cmd way-in" title="Paste a glossary's Markdown" @onclick="ShowPaste">@Icons.Paste<span class="wide">Paste</span></button>
+        <button class="cmd way-in" title="Review a public GitHub repo's glossary" @onclick="ShowRepo">@Icons.Repo<span class="wide">Repo</span></button>
+        <button class="cmd way-in" title="Motif Sketch's glossary, with its sketch file" @onclick="OpenExample">@Icons.Example<span class="wide">Example</span></button>
         <div class="vsep"></div>
         <ThemeMenu Theme="@theme" ThemeChanged="SetTheme" Open="@(menu == Menu.Theme)" OnToggle="@(() => Toggle(Menu.Theme))" />
         <button class="cmd icon" title="Help" @onclick="ToggleHelp" @onclick:stopPropagation="true">@SuiteIcons.Help</button>
