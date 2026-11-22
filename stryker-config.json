@@ -1,9 +1,6 @@
 {
   "stryker-config": {
     "solution": "Motif.Glossary.sln",
-    "test-projects": [
-      "Checks/Motif.Glossary.Specs/Motif.Glossary.Specs.csproj"
-    ],
     "mutate": [
       "!**/Motif.Glossary.Fakes/**"
     ],
