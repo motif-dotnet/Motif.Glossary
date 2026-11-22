@@ -32,9 +32,14 @@ You need the .NET 10 SDK.
 
 ```
 dotnet run --project Motif.Glossary.App   # the app
-dotnet test                                # the specs
+dotnet test                                # the specs, then the browser specs in Edge
+dotnet test Checks/Motif.Glossary.Specs    # the specs alone, in a second
 dotnet tool restore && dotnet stryker      # mutation testing of the specs
 ```
+
+The browser specs publish the app, serve it and open it in Edge. `MOTIF_BROWSER` picks another browser, such as `chrome`, and `MOTIF_SITE` names a folder the app is already published to. They cover the page's layout, the theme and repo links; the file picker, dropping and the real GitHub are checked by hand, with [docs/manual-checks.md](docs/manual-checks.md).
+
+Every push to `main`, and every pull request, runs [.github/workflows/pages.yml](.github/workflows/pages.yml): it builds with warnings as errors, runs the specs, publishes, and runs the browser specs against what it published. A change to the top-level `.md` files alone doesn't run it.
 
 Mutation testing uses [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/introduction/), a .NET tool pinned in [dotnet-tools.json](dotnet-tools.json), set up by [stryker-config.json](stryker-config.json) over [Motif.Glossary.Specs.slnx](Motif.Glossary.Specs.slnx), so the browser specs stay out. It changes the code under the specs (Domain and UseCases) a little at a time and checks a spec fails each time. The HTML report is written to `StrykerOutput/`.
 
